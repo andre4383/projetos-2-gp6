@@ -1,26 +1,52 @@
+"use client";
 import { useState } from "react";
-import { Truck, Clock, Calculator } from "lucide-react";
+import { ArrowRight, Leaf } from "lucide-react";
+import { useRouter } from "next/navigation";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { useRef } from "react";
+import Image from "next/image";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export default function LandingCalculator() {
-  // Campos do backend
+  const containerRef = useRef(null);
   const [tipoVeiculo, setTipoVeiculo] = useState("Leve");
   const [pedagiosPorMes, setPedagiosPorMes] = useState("40");
-
   const [ano, setAno] = useState("2024");
   const [modelo, setModelo] = useState("");
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [distancia, setDistancia] = useState("150");
   const [valorMedio, setValorMedio] = useState("8,50");
 
   const [loading, setLoading] = useState(false);
-  const [resultado, setResultado] = useState(null);
   const [error, setError] = useState(null);
+  
+  const router = useRouter();
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleCalcular = async () => {
+    if (!nome || !email || !ano || !modelo || !valorMedio || !pedagiosPorMes) {
+      setErrorMessage("Por favor, preencha todos os campos obrigatórios.");
+      setIsErrorModalOpen(true);
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage("Por favor, insira um e-mail válido.");
+      setIsErrorModalOpen(true);
+      return;
+    }
+
     setLoading(true);
     setError(null);
-    setResultado(null);
 
     try {
       const response = await fetch(
@@ -29,213 +55,207 @@ export default function LandingCalculator() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            tipoVeiculo:
-              tipoVeiculo.toLowerCase() === "leve" ? "leve" : "pesado",
+            tipoVeiculo: tipoVeiculo.toLowerCase() === "leve" ? "leve" : "pesado",
             tipoCombustivel: "gasolina",
             totalPassagens: Number(pedagiosPorMes),
+            ano: Number(ano),
+            modelo: modelo,
+            nome: nome,
+            email: email,
+            valorMedio: Number(valorMedio.replace(",", ".")),
           }),
-        },
+        }
       );
 
       if (!response.ok) throw new Error("Erro na resposta do servidor.");
 
       const data = await response.json();
-      setResultado(data);
+      const resultadoCompleto = {
+        ...data,
+        pedagiosPorMes,
+        valorMedio: Number(valorMedio.replace(',', '.'))
+      };
+      localStorage.setItem("taggySustainResultado", JSON.stringify(resultadoCompleto));
+      router.push("/resultado");
     } catch (err) {
-      setError("Falha de conexão com a API.");
+      setErrorMessage("Falha de conexão com a API. Tente novamente mais tarde.");
+      setIsErrorModalOpen(true);
     } finally {
       setLoading(false);
     }
   };
 
-  // Observa mudanças nos campos para mostrar o resultado ou o placeholder
-  const isFormFilled = tipoVeiculo && ano && pedagiosPorMes && distancia;
+  useGSAP(() => {
+    gsap.fromTo(".calc-anim-left",
+      { y: 30, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out", delay: 0.2 }
+    );
+    gsap.fromTo(".calc-anim-right",
+      { x: 30, opacity: 0 },
+      { x: 0, opacity: 1, duration: 0.8, ease: "power3.out", delay: 0.4 }
+    );
+  }, { scope: containerRef });
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex flex-col lg:flex-row gap-12 w-full max-w-5xl mx-auto">
-      {/* Esquerda: Formulário */}
-      <div className="flex-1 space-y-8">
-        {/* Seção 1: Dados do veículo */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <Truck className="w-5 h-5 text-emerald-600" />
-            <h3 className="text-lg font-semibold text-gray-900">
-              Dados do veículo
-            </h3>
+    <div ref={containerRef} className="bg-white/95 backdrop-blur-md rounded-[2rem] p-8 md:p-14 w-full max-w-6xl mx-auto shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-gray-100">
+      <div className="flex flex-col lg:flex-row gap-16 items-center lg:items-start">
+        
+        {/* Esquerda: Textos */}
+        <div className="flex-1 lg:max-w-md w-full">
+          <div className="calc-anim-left inline-block px-3 py-1 rounded-md border border-emerald-100 bg-emerald-50 text-xs font-semibold text-emerald-800 mb-8 uppercase tracking-wider">
+            Simulador Taggy
           </div>
+          
+          <h2 className="calc-anim-left text-4xl lg:text-5xl font-medium text-gray-900 tracking-tight leading-[1.15] mb-6">
+            Descubra o seu potencial de economia.
+          </h2>
+          
+          <p className="calc-anim-left text-gray-500 text-sm md:text-base leading-relaxed mb-10">
+            A Taggy ajuda organizações e motoristas a gerenciarem gastos e emissões. Preencha seus dados para ver o impacto exato na sua rotina.
+          </p>
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">
-                Tipo de veículo
-              </label>
-              <select
-                value={tipoVeiculo}
-                onChange={(e) => setTipoVeiculo(e.target.value)}
-                className="w-full bg-gray-50/50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all cursor-pointer"
-              >
-                <option value="Leve">Leve (Carro/Moto)</option>
-                <option value="Pesado">Pesado (Caminhão/Ônibus)</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">
-                Ano
-              </label>
-              <input
-                type="text"
-                value={ano}
-                onChange={(e) => setAno(e.target.value)}
-                className="w-full bg-gray-50/50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1.5">
-              Modelo específico
-            </label>
-            <input
-              type="text"
-              placeholder="Ex: Honda Civic, Toyota Corolla"
-              value={modelo}
-              onChange={(e) => setModelo(e.target.value)}
-              className="w-full bg-gray-50/50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all placeholder:text-gray-400"
-            />
+          <div className="calc-anim-left hidden lg:block w-full h-56 rounded-2xl overflow-hidden mt-auto border border-gray-100">
+             <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=800&auto=format&fit=crop" alt="Green Infrastructure" className="w-full h-full object-cover opacity-90" />
           </div>
         </div>
 
-        {/* Seção 2: Informações de uso */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <Clock className="w-5 h-5 text-emerald-600" />
-            <h3 className="text-lg font-semibold text-gray-900">
-              Informações de uso
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        {/* Direita: Formulário Clean */}
+        <div className="calc-anim-right flex-1 w-full bg-[#F9FBF9] rounded-2xl p-8 border border-emerald-50">
+          <div className="space-y-6">
+            
+            {/* Bloco 1: Veículo */}
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">
-                Nome completo
-              </label>
-              <input
-                type="text"
-                placeholder="Seu nome"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                className="w-full bg-gray-50/50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">
-                E-mail
-              </label>
-              <input
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-gray-50/50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">
-                Valor médio por pedágio
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-2.5 text-gray-500 text-sm">
-                  R$
-                </span>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-6 h-6 rounded bg-[#2C4A28] flex items-center justify-center">
+                  <Leaf className="w-3 h-3 text-white" />
+                </div>
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest">Veículo</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Tipo</label>
+                  <select
+                    value={tipoVeiculo}
+                    onChange={(e) => setTipoVeiculo(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow cursor-pointer"
+                  >
+                    <option value="Leve">Leve (Carro/Moto)</option>
+                    <option value="Pesado">Pesado (Caminhão/Ônibus)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Ano</label>
+                  <input
+                    type="text"
+                    value={ano}
+                    onChange={(e) => setAno(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Modelo Específico</label>
                 <input
                   type="text"
-                  value={valorMedio}
-                  onChange={(e) => setValorMedio(e.target.value)}
-                  className="w-full bg-gray-50/50 border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-900 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                  placeholder="Ex: Honda Civic, Toyota Corolla"
+                  value={modelo}
+                  onChange={(e) => setModelo(e.target.value)}
+                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
                 />
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">
-                Pedágios por mês
-              </label>
-              <input
-                type="number"
-                value={pedagiosPorMes}
-                onChange={(e) => setPedagiosPorMes(e.target.value)}
-                className="w-full bg-gray-50/50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
-              />
-            </div>
-          </div>
+            <div className="h-px w-full bg-gray-200/60 my-6"></div>
 
-          <div className="bg-gray-50 text-gray-600 text-sm p-4 rounded-xl mt-6 border border-gray-200">
-            <p className="font-medium text-gray-800 mb-1">
-              Parâmetros de cálculo base:
-            </p>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Métrica de distância total de um pedágio convencional: 3m</li>
-              <li>Tempo de operação médio do sistema: 3,5s</li>
-            </ul>
+            {/* Bloco 2: Usuário */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest mb-4">Contato</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Nome Completo</label>
+                  <input
+                    type="text"
+                    placeholder="Seu nome"
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">E-mail</label>
+                  <input
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="h-px w-full bg-gray-200/60 my-6"></div>
+
+            {/* Bloco 3: Uso */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest mb-4">Uso Mensal</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Média por Pedágio (R$)</label>
+                  <input
+                    type="text"
+                    value={valorMedio}
+                    onChange={(e) => setValorMedio(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Qtd. de Passagens</label>
+                  <input
+                    type="number"
+                    value={pedagiosPorMes}
+                    onChange={(e) => setPedagiosPorMes(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Ação */}
+            <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="text-[11px] text-gray-400 font-medium">Os dados são protegidos e confidenciais.</span>
+              
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  onClick={handleCalcular}
+                  disabled={loading}
+                  className="flex-1 sm:flex-none px-6 py-3 bg-white border border-emerald-200 text-[#0A3B24] font-bold rounded-xl hover:bg-emerald-50 transition-colors text-sm"
+                >
+                  {loading ? "Processando..." : "Gerar Relatório"}
+                </button>
+                <button
+                  onClick={handleCalcular}
+                  disabled={loading}
+                  className="w-12 h-12 bg-[#0A3B24] text-white flex items-center justify-center rounded-xl hover:bg-[#062617] transition-colors shrink-0"
+                >
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-
-        {/* Adicionei um botão extra que só aparece para acionar o calculo, já que na imagem não tem botão explícito no form (a imagem assume que calcula ao digitar, mas precisamos bater na API) */}
-        <button
-          onClick={handleCalcular}
-          disabled={loading}
-          className="w-full bg-emerald-800 text-white font-medium py-3 rounded-xl hover:bg-emerald-900 transition-colors"
-        >
-          {loading ? "Calculando..." : "Calcular Economia"}
-        </button>
       </div>
 
-      {/* Direita: Resultado */}
-      <div className="flex-1 flex items-center justify-center min-h-[400px]">
-        {resultado ? (
-          <div className="w-full h-full bg-gray-50 rounded-2xl border border-gray-200 p-8 flex flex-col justify-center">
-            <h4 className="text-xl font-bold text-gray-900 mb-2">
-              Sua economia
-            </h4>
-            {/* Renderize os dados da API aqui. Exemplo genérico: */}
-            <p className="text-gray-600 mb-6">
-              Com base nas suas {resultado.totalPassagens || pedagiosPorMes}{" "}
-              passagens mensais:
-            </p>
-            <div className="bg-white p-6 rounded-xl border border-emerald-100 shadow-sm mb-4">
-              <div className="text-sm text-gray-500 mb-1">
-                Economia estimada
-              </div>
-              <div className="text-4xl font-bold text-emerald-600">
-                R$ {resultado.economiaEstimada || "120,50"}
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-xl border border-emerald-100 shadow-sm">
-              <div className="text-sm text-gray-500 mb-1">CO₂ Evitado</div>
-              <div className="text-4xl font-bold text-emerald-600">
-                {resultado.co2Evitado || "0.0"} kg
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="w-full h-full bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center p-8 text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <Calculator className="w-8 h-8 text-gray-400" />
-            </div>
-            <h4 className="text-gray-900 font-semibold mb-1">
-              Preencha os dados
-            </h4>
-            <p className="text-sm text-gray-500">
-              Sua economia será calculada aqui
-            </p>
-          </div>
-        )}
-      </div>
+      <Dialog open={isErrorModalOpen} onOpenChange={setIsErrorModalOpen}>
+        <DialogContent className="rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900">Atenção</DialogTitle>
+            <DialogDescription className="text-gray-500">{errorMessage}</DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
