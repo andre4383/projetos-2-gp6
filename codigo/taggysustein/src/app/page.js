@@ -119,12 +119,7 @@ export default function Home() {
           <span className="text-xl font-bold tracking-tighter text-gray-900">TaggySustain</span>
         </div>
         <div className="flex items-center gap-4">
-          <Link
-            href="/login"
-            className="hidden sm:block text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors"
-          >
-            Já sou cliente
-          </Link>
+
           <Link
             href="/login"
             className="bg-[#0A3B24] text-white px-7 py-3 rounded-full text-sm font-medium hover:bg-[#062617] hover:-translate-y-0.5 transition-all shadow-md"
