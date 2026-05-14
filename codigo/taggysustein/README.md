@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# TaggySustain - Frontend
 
-## Getting Started
+Repositório frontend do projeto TaggySustain, plataforma de gestão de pagamento de pedágios com foco em sustentabilidade.
 
-First, run the development server:
+## Atualizações Recentes
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 1. Landing Page
+- Nova estrutura visual (`src/app/page.js`) com esquema de cores atualizado (baseado em `#1e9b65`).
+- Integração da biblioteca GSAP para efeitos de scroll (pin no Hero section) e animações de entrada em cascata nos componentes de texto.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Calculadora
+- Refatoração do componente `LandingCalculator.js`.
+- Remoção dos campos de horários de entrada e saída.
+- Adição de nota explicativa sobre os parâmetros de cálculo padrão (3m de distância e 3,5s de operação).
+- Atualização da paleta de cores dos botões de ação para a cor verde escura (`bg-emerald-800`).
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### 3. Rodapé
+- Substituição do rodapé antigo por uma versão em texto simples.
+- Implementação da fonte Lora carregada via `next/font/google`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Autenticação
+- Ajuste de branding na tela de login (`/login`), com a nova logo (ícone Leaf do lucide-react) e título atualizado para TaggySustain.
+- Padronização das cores dos botões de submit para corresponder ao tema escuro da aplicação (`bg-emerald-800`).
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tecnologias Utilizadas
+- Next.js
+- Tailwind CSS
+- GSAP / @gsap/react
+- Lucide React

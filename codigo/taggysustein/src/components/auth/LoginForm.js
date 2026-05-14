@@ -2,19 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import AuthInput from "./AuthInput";
-import AuthButton from "./AuthButton";
+import { Leaf } from "lucide-react";
 
 export default function LoginForm() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [mostrarSenha, setMostrarSenha] = useState(false);
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     setErro("");
 
     if (!email.trim() || !senha.trim()) {
@@ -49,46 +48,96 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="bg-white p-8 rounded-2xl w-80 shadow-lg text-center">
-      <h2 className="mb-5 text-gray-700 text-lg font-medium">
-        Acesse sua conta:
-      </h2>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-white flex flex-col w-full">
+      <div className="w-full p-4 flex items-center">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-[#00a651] flex items-center justify-center">
+            <Leaf className="w-5 h-5 text-white" strokeWidth={2.5} />
+          </div>
+          <span className="text-xl font-semibold text-gray-900">
+            TaggySustain
+          </span>
+        </div>
+      </div>
 
-      <AuthInput
-        type="text"
-        placeholder="E-mail ou CPF"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      {/* Login Form */}
+      <div className="flex-1 flex items-center justify-center px-4">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+                Bem-vindo de volta
+              </h1>
+              <p className="text-sm text-gray-600">Entre na sua conta Taggy</p>
+            </div>
 
-      <AuthInput
-        type={mostrarSenha ? "text" : "password"}
-        placeholder="Senha"
-        value={senha}
-        onChange={(e) => setSenha(e.target.value)}
-        showPasswordToggle={true}
-        onTogglePassword={() => setMostrarSenha(!mostrarSenha)}
-        mostrarSenha={mostrarSenha}
-      />
+            <form onSubmit={handleLogin} className="flex flex-col gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="seu@email.com"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#00a651] focus:ring-2 focus:ring-[#00a651]/20 transition-all"
+                  required
+                />
+              </div>
 
-      {erro && <p className="text-red-500 text-sm mt-2 font-medium">{erro}</p>}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Senha
+                </label>
+                <input
+                  type="password"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#00a651] focus:ring-2 focus:ring-[#00a651]/20 transition-all"
+                  required
+                />
+              </div>
 
-      <AuthButton onClick={handleLogin}>
-        {loading ? "ENTRANDO..." : "ENTRAR"}
-      </AuthButton>
+              {erro && (
+                <p className="text-red-500 text-sm mt-1 font-medium">{erro}</p>
+              )}
 
-      <a href="#" className="block mt-4 text-sm text-green-700 hover:underline">
-        Esqueci minha senha
-      </a>
+              <div className="flex items-center justify-between text-sm mt-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" className="w-4 h-4 accent-[#00a651]" />
+                  <span className="text-gray-600">Lembrar de mim</span>
+                </label>
+                <a
+                  href="#"
+                  className="text-[#00a651] hover:text-[#008f47] font-medium"
+                >
+                  Esqueceu a senha?
+                </a>
+              </div>
 
-      <div className="h-px bg-gray-200 my-5"></div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-emerald-800 text-white py-3 rounded-lg font-medium hover:bg-emerald-900 transition-colors mt-4 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {loading ? "Entrando..." : "Entrar"}
+              </button>
+            </form>
 
-      <p className="text-sm text-gray-500">
-        Não tem uma conta?{" "}
-        <span className="text-green-700 font-semibold cursor-pointer hover:underline">
-          Cadastre-se
-        </span>
-      </p>
+            <div className="mt-6 text-center text-sm text-gray-600">
+              Não tem uma conta?{" "}
+              <a
+                href="#"
+                className="text-[#00a651] hover:text-[#008f47] font-medium"
+              >
+                Criar conta
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

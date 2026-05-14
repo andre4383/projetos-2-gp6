@@ -11,7 +11,7 @@ export default function CalculadoraForm({ onCalculateSuccess }) {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    onCalculateSuccess(null); // Clear previous results while loading
+    onCalculateSuccess(null);
 
     try {
       const response = await fetch(
@@ -44,30 +44,30 @@ export default function CalculadoraForm({ onCalculateSuccess }) {
   };
 
   return (
-    <>
-      <form onSubmit={handleCalcular} className="space-y-5">
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-zinc-600">
-            Tipo de Veículo
-          </label>
+    <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 mx-auto mt-10 border border-gray-100">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold text-gray-900">Calculadora de Emissão de CO₂</h2>
+      </div>
+
+      <form onSubmit={handleCalcular} className="flex flex-col gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipo de Veículo</label>
           <select
             value={tipoVeiculo}
             onChange={(e) => setTipoVeiculo(e.target.value)}
-            className="w-full bg-white border border-zinc-200 text-zinc-800 text-sm p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-shadow cursor-pointer"
+            className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#00a651] focus:ring-2 focus:ring-[#00a651]/20 cursor-pointer"
           >
             <option value="leve">Leve (Carro)</option>
             <option value="pesado">Pesado (Caminhão/Ônibus)</option>
           </select>
         </div>
 
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-zinc-600">
-            Combustível
-          </label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipo de Combustível</label>
           <select
             value={tipoCombustivel}
             onChange={(e) => setTipoCombustivel(e.target.value)}
-            className="w-full bg-white border border-zinc-200 text-zinc-800 text-sm p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-shadow cursor-pointer"
+            className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#00a651] focus:ring-2 focus:ring-[#00a651]/20 cursor-pointer"
           >
             <option value="gasolina">Gasolina</option>
             <option value="etanol">Etanol</option>
@@ -75,33 +75,31 @@ export default function CalculadoraForm({ onCalculateSuccess }) {
           </select>
         </div>
 
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-zinc-600">
-            Total de Passagens
-          </label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Total de Passagens</label>
           <input
             type="number"
             min="1"
             value={totalPassagens}
             onChange={(e) => setTotalPassagens(Number(e.target.value))}
-            className="w-full bg-white border border-zinc-200 text-zinc-800 text-sm p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-shadow"
+            className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#00a651] focus:ring-2 focus:ring-[#00a651]/20"
           />
         </div>
+
+        {error && (
+          <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-200">
+            {error}
+          </div>
+        )}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-sm py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
+          className="w-full bg-[#00a651] hover:bg-[#008f47] text-white font-medium text-sm py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00a651]/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
         >
           {loading ? "Calculando..." : "Calcular Impacto"}
         </button>
       </form>
-
-      {error && (
-        <div className="mt-6 p-4 rounded-lg bg-red-50 text-red-600 text-sm text-center">
-          {error}
-        </div>
-      )}
-    </>
+    </div>
   );
 }
