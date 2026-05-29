@@ -1,10 +1,9 @@
 "use client";
-import { useState } from "react";
-import { ArrowRight, Leaf } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { ArrowRight, Leaf, Check, ChevronsUpDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { useRef } from "react";
 import Image from "next/image";
 import {
   Dialog,
@@ -13,26 +12,127 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+
+function SearchableSelect({
+  label,
+  placeholder,
+  items,
+  value,
+  onChange,
+  disabled,
+}) {
+  const [open, setOpen] = useState(false);
+
+  const safeItems = items || [];
+
+  return (
+    <div className="w-full">
+      <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+        {label}
+      </label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            suppressHydrationWarning
+            disabled={disabled}
+            type="button"
+            className="flex items-center justify-between w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow disabled:opacity-60 disabled:cursor-not-allowed text-left"
+          >
+            <span className="truncate">
+              {value
+                ? safeItems.find((item) => item.valor === value)?.nome ||
+                  placeholder
+                : placeholder}
+            </span>
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-[var(--radix-popover-trigger-width)] p-0"
+          align="start"
+        >
+          <Command>
+            <CommandInput placeholder={`Buscar ${label.toLowerCase()}...`} />
+            <CommandList>
+              <CommandEmpty>Nenhum resultado.</CommandEmpty>
+              <CommandGroup>
+                {safeItems.map((item) => (
+                  <CommandItem
+                    key={item.valor}
+                    value={item.nome}
+                    onSelect={() => {
+                      onChange(item.valor, item.nome);
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={`mr-2 h-4 w-4 ${value === item.valor ? "opacity-100" : "opacity-0"}`}
+                    />
+                    {item.nome}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
 
 export default function LandingCalculator() {
   const containerRef = useRef(null);
   const [tipoVeiculo, setTipoVeiculo] = useState("Leve");
   const [pedagiosPorMes, setPedagiosPorMes] = useState("40");
-  const [ano, setAno] = useState("2024");
-  const [modelo, setModelo] = useState("");
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [valorMedio, setValorMedio] = useState("8,50");
 
+  // FIPE
+  const [marcas, setMarcas] = useState([]);
+  const [modelos, setModelos] = useState([]);
+  const [anos, setAnos] = useState([]);
+
+  const [marcaSelecionada, setMarcaSelecionada] = useState("");
+  const [modeloSelecionado, setModeloSelecionado] = useState("");
+  const [anoSelecionado, setAnoSelecionado] = useState("");
+
+  const [marcaNome, setMarcaNome] = useState("");
+  const [modeloNome, setModeloNome] = useState("");
+  const [anoNome, setAnoNome] = useState("");
+
+  const [loadingFipe, setLoadingFipe] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const router = useRouter();
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleCalcular = async () => {
-    if (!nome || !email || !ano || !modelo || !valorMedio || !pedagiosPorMes) {
+    if (
+      !nome ||
+      !email ||
+      !anoSelecionado ||
+      !modeloSelecionado ||
+      !marcaSelecionada ||
+      !valorMedio ||
+      !pedagiosPorMes
+    ) {
       setErrorMessage("Por favor, preencha todos os campos obrigatórios.");
       setIsErrorModalOpen(true);
       return;
@@ -44,97 +144,278 @@ export default function LandingCalculator() {
       setIsErrorModalOpen(true);
       return;
     }
-
     setLoading(true);
     setError(null);
 
+    let anoCalculo = parseInt(anoNome.substring(0, 4)) || 2024;
+    if (anoNome.toLowerCase().includes("zero"))
+      anoCalculo = new Date().getFullYear();
+
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/v1/calculo/impacto",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            tipoVeiculo: tipoVeiculo.toLowerCase() === "leve" ? "leve" : "pesado",
-            tipoCombustivel: "gasolina",
-            totalPassagens: Number(pedagiosPorMes),
-            ano: Number(ano),
-            modelo: modelo,
-            nome: nome,
-            email: email,
-            valorMedio: Number(valorMedio.replace(",", ".")),
-          }),
-        }
-      );
-
-      if (!response.ok) throw new Error("Erro na resposta do servidor.");
-
-      const data = await response.json();
+      // Simulando a requisição para a API (Mock), já que a rota /calculo/impacto ainda não existe no Java
+      // const response = await fetch("http://localhost:8080/api/v1/calculo/impacto", { ... })
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simula tempo de rede
+      
+      const data = {
+        gramasCo2Evitados: Math.floor(Math.random() * 5000) + 2000,
+        arvoresEquivalentes: Math.floor(Math.random() * 5) + 1,
+        percentualReducao: Math.floor(Math.random() * 15) + 5
+      };
       const resultadoCompleto = {
         ...data,
         pedagiosPorMes,
-        valorMedio: Number(valorMedio.replace(',', '.'))
+        valorMedio: Number(valorMedio.replace(",", ".")),
       };
-      localStorage.setItem("taggySustainResultado", JSON.stringify(resultadoCompleto));
+      localStorage.setItem(
+        "taggySustainResultado",
+        JSON.stringify(resultadoCompleto),
+      );
       router.push("/resultado");
     } catch (err) {
-      setErrorMessage("Falha de conexão com a API. Tente novamente mais tarde.");
+      console.error(err);
+      if (err.name === "TypeError" && err.message.includes("fetch")) {
+        setErrorMessage("O backend Java não está rodando na porta 8080 ou está bloqueando a conexão (CORS).");
+      } else {
+        setErrorMessage(err.message || "Falha de conexão com a API.");
+      }
       setIsErrorModalOpen(true);
     } finally {
       setLoading(false);
     }
   };
 
-  useGSAP(() => {
-    gsap.fromTo(".calc-anim-left",
-      { y: 30, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out", delay: 0.2 }
-    );
-    gsap.fromTo(".calc-anim-right",
-      { x: 30, opacity: 0 },
-      { x: 0, opacity: 1, duration: 0.8, ease: "power3.out", delay: 0.4 }
-    );
-  }, { scope: containerRef });
+  useEffect(() => {
+    const fetchMarcas = async () => {
+      setLoadingFipe(true);
+      try {
+        const tipoFipe = tipoVeiculo === "Leve" ? "carros" : "caminhoes";
+        const res = await fetch(
+          `https://parallelum.com.br/fipe/api/v1/${tipoFipe}/marcas`,
+        );
+        const data = await res.json();
+
+        const popularBrands = [
+          "Fiat",
+          "Chevrolet",
+          "Volkswagen",
+          "Toyota",
+          "Hyundai",
+          "Honda",
+          "Renault",
+          "Ford",
+          "Nissan",
+          "Jeep",
+        ];
+
+        let mappedData = (Array.isArray(data) ? data : []).map((item) => {
+          let nomeLimpo = item.nome;
+          if (nomeLimpo.toUpperCase() === "GM - CHEVROLET") nomeLimpo = "Chevrolet";
+          if (nomeLimpo.toUpperCase() === "VW - VOLKSWAGEN") nomeLimpo = "Volkswagen";
+          return {
+            nome: nomeLimpo,
+            valor: item.codigo || item.valor,
+          };
+        });
+
+        mappedData.sort((a, b) => {
+          const aIndex = popularBrands.indexOf(a.nome);
+          const bIndex = popularBrands.indexOf(b.nome);
+          if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+          if (aIndex !== -1) return -1;
+          if (bIndex !== -1) return 1;
+          return a.nome.localeCompare(b.nome);
+        });
+
+        setMarcas(mappedData);
+        setMarcaSelecionada("");
+        setModeloSelecionado("");
+        setAnoSelecionado("");
+        setModelos([]);
+        setAnos([]);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoadingFipe(false);
+      }
+    };
+    fetchMarcas();
+  }, [tipoVeiculo]);
+
+  useEffect(() => {
+    const fetchModelos = async () => {
+      if (!marcaSelecionada) {
+        setModelos([]);
+        setModeloSelecionado("");
+        setAnoSelecionado("");
+        setAnos([]);
+        return;
+      }
+      setLoadingFipe(true);
+      try {
+        const marcaObj = marcas.find(m => m.valor === marcaSelecionada);
+        const nomeDaMarca = marcaObj ? marcaObj.nome : "";
+
+        const whitelistMap = {
+          "Volkswagen": ["Gol", "Polo", "Fox", "Up!", "Nivus", "T-Cross", "Taos", "Tiguan", "Amarok", "Jetta", "Virtus", "Voyage", "Saveiro"],
+          "Chevrolet": ["Onix", "Prisma", "Cruze", "Tracker", "S10", "Spin", "Cobalt", "Montana", "Celta", "Corsa", "Vectra", "Astra", "Meriva", "Zafira", "Equinox"],
+          "Fiat": ["Argo", "Mobi", "Cronos", "Pulse", "Fastback", "Toro", "Strada", "Fiorino", "Palio", "Uno", "Siena", "Grand Siena", "Punto", "Idea", "Bravo"],
+          "Ford": ["Ka", "Fiesta", "Focus", "EcoSport", "Ranger", "Fusion", "Mustang", "Territory", "Bronco"],
+          "Toyota": ["Corolla", "Hilux", "Yaris", "Etios", "RAV4", "SW4", "Corolla Cross"],
+          "Honda": ["Civic", "Fit", "HR-V", "City", "CR-V", "WR-V", "Accord", "ZR-V"],
+          "Hyundai": ["HB20", "HB20S", "Creta", "Tucson", "Santa Fe", "Azera", "Elantra", "i30", "IX35"],
+          "Renault": ["Kwid", "Sandero", "Logan", "Duster", "Captur", "Oroch", "Fluence", "Clio"],
+          "Jeep": ["Renegade", "Compass", "Commander", "Wrangler", "Cherokee"],
+          "Nissan": ["Kicks", "Versa", "Sentra", "Frontier", "March"]
+        };
+
+        let uniqueModelNames = [];
+
+        if (tipoVeiculo === "Leve" && whitelistMap[nomeDaMarca]) {
+          uniqueModelNames = whitelistMap[nomeDaMarca];
+        } else {
+          const tipoFipe = tipoVeiculo === "Leve" ? "carros" : "caminhoes";
+          const res = await fetch(
+            `https://parallelum.com.br/fipe/api/v1/${tipoFipe}/marcas/${marcaSelecionada}/modelos`,
+          );
+          const data = await res.json();
+          const modelosRaw = Array.isArray(data) ? data : data.modelos || [];
+          
+          const getBaseModel = (name) => {
+            const parts = name
+              .replace(/\(novo\)/gi, "")
+              .replace(/\(modelo antigo\)/gi, "")
+              .trim()
+              .split(" ");
+            let base = parts[0];
+            const twoWordBases = ["Grand", "Santa", "Land", "Range", "Aston", "Alfa", "C3", "C4", "Palio", "Space", "Cross", "Eco", "T-Cross"];
+            if (parts.length > 1 && twoWordBases.includes(base)) {
+              base += " " + parts[1];
+            }
+            return base;
+          };
+
+          uniqueModelNames = Array.from(
+            new Set(modelosRaw.map((m) => getBaseModel(m.nome))),
+          );
+        }
+
+        const mappedModelos = uniqueModelNames
+          .map((name) => ({
+            nome: name,
+            valor: name,
+          }))
+          .sort((a, b) => a.nome.localeCompare(b.nome));
+
+        setModelos(mappedModelos);
+        setModeloSelecionado("");
+        setAnoSelecionado("");
+        setAnos([]);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoadingFipe(false);
+      }
+    };
+    fetchModelos();
+  }, [marcaSelecionada, tipoVeiculo]);
+
+  // Buscar anos ao selecionar modelo
+  useEffect(() => {
+    if (!modeloSelecionado) {
+      setAnos([]);
+      setAnoSelecionado("");
+      return;
+    }
+    // Como agrupamos os modelos de forma simplificada, não usamos mais FIPE para o ano.
+    // Em vez disso, geramos uma lista clara e direta de anos.
+    setLoadingFipe(true);
+    const currentYear = new Date().getFullYear();
+    const staticYears = [{ nome: "Zero km", valor: "zero" }];
+    for (let y = currentYear; y >= 1990; y--) {
+      staticYears.push({ nome: y.toString(), valor: y.toString() });
+    }
+    setAnos(staticYears);
+    setAnoSelecionado("");
+    setLoadingFipe(false);
+  }, [modeloSelecionado, marcaSelecionada, tipoVeiculo]);
+
+  useGSAP(
+    () => {
+      gsap.fromTo(
+        ".calc-anim-left",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: "power3.out",
+          delay: 0.2,
+        },
+      );
+      gsap.fromTo(
+        ".calc-anim-right",
+        { x: 30, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.8, ease: "power3.out", delay: 0.4 },
+      );
+    },
+    { scope: containerRef, dependencies: [] },
+  );
 
   return (
-    <div ref={containerRef} className="bg-white/95 backdrop-blur-md rounded-[2rem] p-8 md:p-14 w-full max-w-6xl mx-auto shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-gray-100">
+    <div
+      ref={containerRef}
+      className="bg-white/95 backdrop-blur-md rounded-[2rem] p-8 md:p-14 w-full max-w-6xl mx-auto shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-gray-100"
+    >
       <div className="flex flex-col lg:flex-row gap-16 items-center lg:items-start">
-        
         {/* Esquerda: Textos */}
         <div className="flex-1 lg:max-w-md w-full">
           <div className="calc-anim-left inline-block px-3 py-1 rounded-md border border-emerald-100 bg-emerald-50 text-xs font-semibold text-emerald-800 mb-8 uppercase tracking-wider">
             Simulador Taggy
           </div>
-          
+
           <h2 className="calc-anim-left text-4xl lg:text-5xl font-medium text-gray-900 tracking-tight leading-[1.15] mb-6">
             Descubra o seu potencial de economia.
           </h2>
-          
+
           <p className="calc-anim-left text-gray-500 text-sm md:text-base leading-relaxed mb-10">
-            A Taggy ajuda organizações e motoristas a gerenciarem gastos e emissões. Preencha seus dados para ver o impacto exato na sua rotina.
+            A Taggy ajuda organizações e motoristas a gerenciarem gastos e
+            emissões. Preencha seus dados para ver o impacto exato na sua
+            rotina.
           </p>
 
           <div className="calc-anim-left hidden lg:block w-full h-56 rounded-2xl overflow-hidden mt-auto border border-gray-100">
-             <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=800&auto=format&fit=crop" alt="Green Infrastructure" className="w-full h-full object-cover opacity-90" />
+            <img
+              src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=800&auto=format&fit=crop"
+              alt="Green Infrastructure"
+              className="w-full h-full object-cover opacity-90"
+            />
           </div>
         </div>
 
         {/* Direita: Formulário Clean */}
         <div className="calc-anim-right flex-1 w-full bg-[#F9FBF9] rounded-2xl p-8 border border-emerald-50">
           <div className="space-y-6">
-            
             {/* Bloco 1: Veículo */}
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-6 h-6 rounded bg-[#2C4A28] flex items-center justify-center">
                   <Leaf className="w-3 h-3 text-white" />
                 </div>
-                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest">Veículo</h3>
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest">
+                  Veículo
+                </h3>
               </div>
               <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Tipo</label>
+                <div className="w-full">
+                  <label
+                    htmlFor="tipoVeiculo"
+                    className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
+                  >
+                    Tipo
+                  </label>
                   <select
+                    id="tipoVeiculo"
                     value={tipoVeiculo}
                     onChange={(e) => setTipoVeiculo(e.target.value)}
                     className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow cursor-pointer"
@@ -143,24 +424,44 @@ export default function LandingCalculator() {
                     <option value="Pesado">Pesado (Caminhão/Ônibus)</option>
                   </select>
                 </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Ano</label>
-                  <input
-                    type="text"
-                    value={ano}
-                    onChange={(e) => setAno(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
-                  />
-                </div>
+                <SearchableSelect
+                  label="Marca"
+                  placeholder="Selecione a marca..."
+                  items={marcas}
+                  value={marcaSelecionada}
+                  onChange={(val, nome) => {
+                    setMarcaSelecionada(val);
+                    setMarcaNome(nome);
+                  }}
+                  disabled={loadingFipe || marcas.length === 0}
+                />
               </div>
-              <div>
-                <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Modelo Específico</label>
-                <input
-                  type="text"
-                  placeholder="Ex: Honda Civic, Toyota Corolla"
-                  value={modelo}
-                  onChange={(e) => setModelo(e.target.value)}
-                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <SearchableSelect
+                  label="Modelo"
+                  placeholder="Selecione o modelo..."
+                  items={modelos}
+                  value={modeloSelecionado}
+                  onChange={(val, nome) => {
+                    setModeloSelecionado(val);
+                    setModeloNome(nome);
+                  }}
+                  disabled={
+                    loadingFipe || modelos.length === 0 || !marcaSelecionada
+                  }
+                />
+                <SearchableSelect
+                  label="Ano"
+                  placeholder="Selecione o ano..."
+                  items={anos}
+                  value={anoSelecionado}
+                  onChange={(val, nome) => {
+                    setAnoSelecionado(val);
+                    setAnoNome(nome);
+                  }}
+                  disabled={
+                    loadingFipe || anos.length === 0 || !modeloSelecionado
+                  }
                 />
               </div>
             </div>
@@ -169,11 +470,19 @@ export default function LandingCalculator() {
 
             {/* Bloco 2: Usuário */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest mb-4">Contato</h3>
+              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest mb-4">
+                Contato
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Nome Completo</label>
+                  <label
+                    htmlFor="nome"
+                    className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
+                  >
+                    Nome Completo
+                  </label>
                   <input
+                    id="nome"
                     type="text"
                     placeholder="Seu nome"
                     value={nome}
@@ -182,8 +491,14 @@ export default function LandingCalculator() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">E-mail</label>
+                  <label
+                    htmlFor="email"
+                    className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
+                  >
+                    E-mail
+                  </label>
                   <input
+                    id="email"
                     type="email"
                     placeholder="seu@email.com"
                     value={email}
@@ -198,11 +513,19 @@ export default function LandingCalculator() {
 
             {/* Bloco 3: Uso */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest mb-4">Uso Mensal</h3>
+              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest mb-4">
+                Uso Mensal
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Média por Pedágio (R$)</label>
+                  <label
+                    htmlFor="valorMedio"
+                    className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
+                  >
+                    Média por Pedágio (R$)
+                  </label>
                   <input
+                    id="valorMedio"
                     type="text"
                     value={valorMedio}
                     onChange={(e) => setValorMedio(e.target.value)}
@@ -210,8 +533,14 @@ export default function LandingCalculator() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Qtd. de Passagens</label>
+                  <label
+                    htmlFor="pedagiosPorMes"
+                    className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
+                  >
+                    Qtd. de Passagens
+                  </label>
                   <input
+                    id="pedagiosPorMes"
                     type="number"
                     value={pedagiosPorMes}
                     onChange={(e) => setPedagiosPorMes(e.target.value)}
@@ -223,8 +552,10 @@ export default function LandingCalculator() {
 
             {/* Ação */}
             <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <span className="text-[11px] text-gray-400 font-medium">Os dados são protegidos e confidenciais.</span>
-              
+              <span className="text-[11px] text-gray-400 font-medium">
+                Os dados são protegidos e confidenciais.
+              </span>
+
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   onClick={handleCalcular}
@@ -242,17 +573,17 @@ export default function LandingCalculator() {
                 </button>
               </div>
             </div>
-
           </div>
         </div>
-
       </div>
 
       <Dialog open={isErrorModalOpen} onOpenChange={setIsErrorModalOpen}>
         <DialogContent className="rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-gray-900">Atenção</DialogTitle>
-            <DialogDescription className="text-gray-500">{errorMessage}</DialogDescription>
+            <DialogDescription className="text-gray-500">
+              {errorMessage}
+            </DialogDescription>
           </DialogHeader>
         </DialogContent>
       </Dialog>
