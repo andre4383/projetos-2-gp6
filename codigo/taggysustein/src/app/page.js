@@ -48,13 +48,6 @@ export default function Home() {
         delay: 0.5,
       });
 
-      ScrollTrigger.create({
-        trigger: heroRef.current,
-        start: "top top",
-        pin: true,
-        pinSpacing: false,
-      });
-
       // Setups para o parallax no mousemove
       xToRefBg.current = gsap.quickTo(".parallax-bg", "x", { duration: 0.6, ease: "power3.out" });
       yToRefBg.current = gsap.quickTo(".parallax-bg", "y", { duration: 0.6, ease: "power3.out" });
@@ -132,7 +125,7 @@ export default function Home() {
       {/* HERO SECTION */}
       <section
         ref={heroRef}
-        className="w-full relative px-4 md:px-8 pt-32 lg:pt-36 pb-6 md:pb-12 min-h-[95vh] flex items-center justify-center overflow-hidden"
+        className="w-full sticky top-0 z-0 px-4 md:px-8 pt-32 lg:pt-36 pb-6 md:pb-12 min-h-[95vh] flex items-center justify-center overflow-hidden"
       >
         {/* Imagem de Fundo Desfocada */}
         <div className="absolute inset-0 z-0">

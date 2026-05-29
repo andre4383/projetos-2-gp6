@@ -62,7 +62,7 @@ export default function LoginForm() {
         delay: 0.6,
       });
     },
-    { scope: containerRef }
+    { scope: containerRef, dependencies: [] }
   );
 
   // Intervalo rotativo das simulações de rotas com transição GSAP
@@ -133,12 +133,16 @@ export default function LoginForm() {
       {/* Painel Esquerdo: Formulário de Login dentro do Card */}
       <div className="flex flex-col justify-between p-6 sm:p-10 md:p-12 min-h-screen">
         {/* Logo */}
-        <div className="login-animate-item flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => router.push("/")}
+          className="login-animate-item flex items-center gap-2 cursor-pointer hover:opacity-80"
+        >
           <Leaf className="w-5 h-5 text-emerald-600" strokeWidth={2.5} />
           <span className="text-lg font-bold text-gray-900 tracking-tight">
             TaggySustain
           </span>
-        </div>
+        </button>
 
         {/* Card do Formulário */}
         <div className="login-card w-full max-w-md mx-auto my-auto bg-white rounded-2xl border border-gray-200/60 shadow-xl shadow-gray-200/30 p-8 sm:p-10 flex flex-col justify-center">
