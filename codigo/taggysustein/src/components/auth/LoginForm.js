@@ -153,11 +153,28 @@ export default function LoginForm() {
       );
 
       if (response.ok) {
-        // Pega o nome a partir do email caso a API não retorne
-        const namePart = email.split("@")[0];
-        const formattedName =
-          namePart.charAt(0).toUpperCase() + namePart.slice(1);
-        localStorage.setItem("userName", formattedName);
+        const userData = await response.json();
+        const backendName =
+          userData.nome ||
+          userData.nomeUsuario ||
+          userData.userName ||
+          userData.login;
+
+        let finalName = backendName;
+        if (!finalName) {
+          const namePart = email.split("@")[0];
+          let formattedName =
+            namePart.charAt(0).toUpperCase() + namePart.slice(1);
+
+          if (formattedName.toLowerCase().startsWith("usuario")) {
+            formattedName = formattedName.substring(7);
+            formattedName =
+              formattedName.charAt(0).toUpperCase() + formattedName.slice(1);
+          }
+          finalName = formattedName;
+        }
+
+        localStorage.setItem("userName", finalName);
         router.push("/dashboard");
       } else {
         try {

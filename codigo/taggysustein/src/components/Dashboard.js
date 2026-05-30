@@ -26,8 +26,13 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
   const [activeTab, setActiveTab] = useState("overview");
-  const [userName, setUserName] = useState("Afonso H.");
+  const [userName, setUserName] = useState("");
   const containerRef = useRef(null);
+
+  const displayUserName = userName.toLowerCase().startsWith("usuario")
+    ? userName.substring(7).charAt(0).toUpperCase() +
+      userName.substring(7).slice(1)
+    : userName;
 
   useEffect(() => {
     const savedName = localStorage.getItem("userName");
@@ -59,7 +64,6 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
         delay: 0.3,
       });
 
-      // 4. Metric Cards staggering
       gsap.from(".dash-metric-card", {
         y: 25,
         opacity: 0,
@@ -69,7 +73,6 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
         delay: 0.4,
       });
 
-      // 5. Chart containers
       gsap.from(".dash-chart-card", {
         scale: 0.97,
         y: 20,
@@ -228,14 +231,14 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
           <div className="mt-auto bg-white border border-gray-200 rounded-xl p-3 flex items-center gap-3 shadow-sm cursor-pointer hover:border-[#065f46]/30 transition-colors">
             <div className="w-8 h-8 rounded-full bg-emerald-50 overflow-hidden border border-emerald-100">
               <img
-                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=065f46&color=fff`}
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(displayUserName)}&background=065f46&color=fff`}
                 alt="Avatar"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-semibold text-gray-900 truncate">
-                {userName}
+                {displayUserName}
               </div>
               <div className="text-[11px] text-[#065f46] font-medium truncate">
                 Plano Essencial
@@ -282,7 +285,7 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
                 </button>
                 <div className="w-6 h-6 rounded-full overflow-hidden cursor-pointer ml-1 border border-emerald-200">
                   <img
-                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=065f46&color=fff`}
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(displayUserName)}&background=065f46&color=fff`}
                     alt="Avatar"
                     className="w-full h-full object-cover"
                   />
@@ -295,7 +298,7 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
             <div className="max-w-[1200px] mx-auto space-y-6">
               <div className="dash-welcome flex justify-between items-end mb-8">
                 <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-                  Bem-vindo de volta, {userName}
+                  Bem-vindo de volta, {displayUserName}
                 </h1>
                 <div className="flex items-center gap-3">
                   <button className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:border-[#065f46] hover:text-[#065f46] transition-colors">
