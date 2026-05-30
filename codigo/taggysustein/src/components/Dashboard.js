@@ -36,7 +36,6 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
 
   useGSAP(
     () => {
-      // 1. Sidebar slide-in
       gsap.from(".dash-sidebar", {
         x: -40,
         opacity: 0,
@@ -44,7 +43,6 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
         ease: "power4.out",
       });
 
-      // 2. Header drop-down
       gsap.from(".dash-header", {
         y: -20,
         opacity: 0,
@@ -53,7 +51,6 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
         delay: 0.2,
       });
 
-      // 3. Welcome section & action buttons
       gsap.from(".dash-welcome", {
         y: 15,
         opacity: 0,
@@ -83,7 +80,6 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
         delay: 0.6,
       });
 
-      // 6. Chart Bars (Emissions) growing up
       gsap.from(".chart-bar-anim", {
         scaleY: 0,
         transformOrigin: "bottom",
@@ -93,7 +89,6 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
         delay: 1.0,
       });
 
-      // 7. Table rows staggering in
       gsap.from(".table-row-anim", {
         x: -15,
         opacity: 0,
@@ -103,7 +98,7 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
         delay: 1.1,
       });
     },
-    { scope: containerRef }
+    { scope: containerRef },
   );
 
   return (
@@ -253,7 +248,9 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
         <div className="flex-1 flex flex-col h-full bg-white overflow-hidden">
           <header className="dash-header h-16 px-8 flex items-center justify-between border-b border-gray-100 shrink-0">
             <div className="flex items-center text-sm font-medium text-gray-400">
-              <span className="hover:text-gray-600 cursor-pointer transition-colors">Painel</span>
+              <span className="hover:text-gray-600 cursor-pointer transition-colors">
+                Painel
+              </span>
               <span className="mx-2">{">"}</span>
               <span className="text-[#065f46] font-semibold">Visão Geral</span>
             </div>
@@ -361,7 +358,7 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
                           {metric.value}
                         </span>
                         {metric.hasChart && (
-                           <div className="flex items-end gap-[3px] h-6">
+                          <div className="flex items-end gap-[3px] h-6">
                             {[4, 7, 3, 5, 8, 4, 6, 9].map((h, i) => (
                               <div
                                 key={i}
@@ -475,7 +472,7 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
                               style={{ flex: 0.6 }}
                             ></div>
                           </div>
-                        )
+                        ),
                       )}
                     </div>
                   </div>
@@ -538,7 +535,7 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
                             style={{ height: `${val}%` }}
                           ></div>
                         </div>
-                      )
+                      ),
                     )}
                   </div>
                   <div className="flex justify-between mt-3 text-[9px] font-semibold text-gray-400 uppercase tracking-widest">
