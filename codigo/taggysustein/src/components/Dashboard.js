@@ -298,7 +298,7 @@ export default function Dashboard({ onOpenExportModal, onOpenCalculator }) {
             <div className="max-w-[1200px] mx-auto space-y-6">
               <div className="dash-welcome flex justify-between items-end mb-8">
                 <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-                  Bem-vindo de volta, {displayUserName}
+                  Bem-vindo de volta, {displayUserName}.
                 </h1>
                 <div className="flex items-center gap-3">
                   <button className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:border-[#065f46] hover:text-[#065f46] transition-colors">
