@@ -21,28 +21,29 @@ Através de métricas precisas (como redução de emissão de carbono e economia
 ##  Desenvolvimento e Planejamento
 Para acompanhar a evolução das funcionalidades, utilizamos o Trello como nossa ferramenta de gestão ágil.
 
-##  Quadro de Funcionalidades (Roadmap)
-No quadro abaixo, você encontrará os cards detalhando desde a concepção da lógica de cálculo de CO2 até a interface do dashboard sustentável.
+##  Quadro de Gerenciamento (Overview)
+No quadro abaixo, você encontrará os tickets detalhando desde a concepção da lógica de cálculo de CO2 até a interface do dashboard sustentável de todo o projeto.
 
 <table>
   <tr>
     <td align="center" valign="top" width="50%">
-      <img src="Imgs/Trello Backlog 1.png" alt="Backlog no Trello – visão 1 do quadro" width="440" />
+      <img src="Imgs/jiraboard1.JPG" alt="Backlog no Jira – visão 1 do quadro" width="440" />
     </td>
     <td align="center" valign="top" width="50%">
-      <img src="Imgs/Trello Backlog 2.png" alt="Backlog no Trello – visão 2 do quadro" width="440" />
+      <img src="Imgs/jiraboard2.JPG" alt="Backlog no Jira – visão 2 do quadro" width="440" />
+    </td>
+    <td align="center" valign="top" width="50%">
+      <img src="Imgs/jiraboard3.JPG" alt="Backlog no Jira – visão 3 do quadro" width="440" />
+    </td>
+    <td align="center" valign="top" width="50%">
+      <img src="Imgs/jiraboard4.JPG" alt="Backlog no Jira – visão 4 do quadro" width="440" />
     </td>
   </tr>
 </table>
 
 
-Link do Projeto: [Acesse o Trello aqui](https://trello.com/invite/b/69c1b27fd13fc42b7d5be7b3/ATTIc3a5d6e0ed9b56954ba6333d93ac472450B48124/kanban-projetos-2)
+Link do Projeto: [Acesse o Backlog aqui](https://projetos2-grupo6.atlassian.net/jira/software/projects/SCRUM/boards/1/backlog?atlOrigin=eyJpIjoiZTRiMGM3NDUzN2I0NDgxOGJjMTllMmIzZmQ3MTBhNjAiLCJwIjoiaiJ9)
 
-Principais Cards: 
-- AF02
-- AF06
-- AF07
-- AF08
 
 ##  Design de Experiência e Fluxos do Sistema
 Nesta seção, detalhamos a fundação visual e lógica do projeto, abrangendo desde a concepção inicial das ideias até o mapeamento detalhado das interações do usuário.
@@ -69,10 +70,10 @@ Sketches & Storyboards: Elaboramos um conjunto de 10 storyboards que ilustram o 
 <table>
   <tr>
     <td align="center" valign="top" width="50%">
-      <img src="Imgs/Dashboard Prototype.png" alt="Backlog no Trello – visão 1 do quadro" width="440" />
+      <img src="Imgs/Dashboard Prototype.png" alt="Demonstração do Dashboard do protótipo" width="440" />
     </td>
     <td align="center" valign="top" width="50%">
-      <img src="Imgs/PDF Export Prototype.png" alt="Backlog no Trello – visão 2 do quadro" width="440" />
+      <img src="Imgs/PDF Export Prototype.png" alt="Demostração da função Export PDF do protótipo" width="440" />
     </td>
   </tr>
 </table>
@@ -88,36 +89,25 @@ Para garantir que a lógica do sistema esteja alinhada às necessidades do negó
 ###  Nota de Acesso 
 Para manter este README conciso e evitar excesso de informações visuais, os links abaixo direcionam diretamente para os anexos nos respectivos cards do Trello, onde a documentação técnica está centralizada.
 
-Índice de Diagramas por User Story:
-| História de Usuário              | Diagramas|
-| :---------------- | :---------------------- |
-| _Widget Conversor de Árvores_   | [Diagrama 1](https://trello.com/c/Vq1JOpGb#action-69d4285fbffa5ba2d2209360)  |
-| _Extrato Duplo (Financeiro + Ambiental)_   | [Diagrama 2](https://trello.com/c/rM8TufBM#action-69d42a815055a2c28971c30c) |
-| _Push Notification de Impacto Imediato_ | [Diagrama 3](https://trello.com/c/Y2zU7bYj#action-69d42e979f2c40371ff3e6cf)           |
-| _Gamificação de Metas Verdes_    | [Diagrama 4](https://trello.com/c/wCIshG6F#action-69d4304fa28015eb1248bf18)  |
-| _Benefícios Atrelados à Redução (Cashback Verde)_   | [Diagrama 5](https://trello.com/c/nCxzdZsl#action-69d430ff2ddac1141856e2aa) | 
-| _Tabela de Emissões por Categoria (Motor de Cálculo)_   | [Diagrama 6](https://trello.com/c/BNqL1xU2#action-69d42ce97c576297efbddb91)  |
-| _Dashboard de Economia de Combustível_   | [Diagrama 7](https://trello.com/c/qNFJDah2#action-69d42da5ce967ce2687d645d) |
-| _Relatório "One-Click" de Sustentabilidade (ESG)_   | [Diagrama 8](https://trello.com/c/vYWn09Ew#action-69d42e0698262dce94dd6aa3) |
-| _API de Saída de Dados Abertos (Integração ERP)_   | [Diagrama 9](https://trello.com/c/fBwYqcNM#action-69d430bb4df5072bd356463e) |
-| _Alertas de Ineficiência de Rota_   | [Diagrama 10](https://trello.com/c/FbLfAuYw#action-69d4313ce72e9841613c1a4e) |
 
 ##  Ciclos de Entrega
 Abaixo, detalhamos o cronograma planejado para as Sprints do projeto:
 <table>
   <tr>
     <td align="center" valign="top" width="50%">
-      <img src="Imgs/Trello Backlog Sprint 1.png" alt="Backlog no Trello – visão 1 do quadro" width="440" />
+      <img src="Imgs/Trello Backlog Sprint 1.png" alt="Sprint atual para comprovação de cronograma" width="440" />
     </td>
   </tr>
 </table>
 
-##  Integração com Trello
+##  Integração com Jira
 Para manter a rastreabilidade do projeto:
 
- 1. Cada card de funcionalidade no Trello contém o anexo direto do seu respectivo Sketch ou Diagrama.
+ 1. Cada ticket expressa uma marca e cria uma história do projeto
 
  2. Mudanças nos requisitos refletem atualizações imediatas nos diagramas listados acima.
+
+ 3. Status de cada ticket demosntram como o projeto fluiu de acordo com expectativas prévias
 
 ##  Autores
 
