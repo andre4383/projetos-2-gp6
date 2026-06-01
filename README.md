@@ -112,7 +112,7 @@ Abaixo está a demonstração visual do estado atual do nosso tracker:
 
 - Issue 01
 Falha de conexão de login 
-<img src="Imgs/IssuePrototipoLogin.jpeg" alt="Sprint atual para comprovação de cronograma" width="440" />
+<img src="Imgs/IssuePrototipoLogin.jpeg" alt="Imagem most" width="440" />
 
 *Status: Consertado.*
 
@@ -121,8 +121,9 @@ Falha de conexão de login
 Para garantir a estabilidade e o funcionamento correto das principais jornadas do usuário, realizamos testes de sistema manuais. 
 
 * **Evidência de Execução:** O screencast mostrando a execução completa dos testes de sistema foi anexado correspondente no nosso quadro de tarefas.
-* 🔗 [Clique aqui para acessar o Cartão com o Screencast](URL_DO_SEU_CARTAO) 
-
+<video width="600" height="300" controls alt="Video demonstração de funcionalidades básicas do projeto">
+ <source scr="Showcase/2026-06-01 15-35-57.mp4" type="video/mp4" /> 
+</ video>
 
 
 ### Programação em Par (Pair Programming)
