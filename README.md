@@ -128,8 +128,8 @@ Para garantir a estabilidade e o funcionamento correto das principais jornadas d
 Experimentamos a prática de programação em par durante o desenvolvimento desta entrega para compartilhar conhecimento e aumentar a qualidade do código. Abaixo está o relato das funcionalidades desenvolvidas e os respectivos pares:
 
 #### Relato da Experiência
-> *Reuniões em formato online via semanais na plataforma Discord para alinhamento de ideias e gerenciamento de progresso da sprint.*
-<img src="Imgs/PairProgrammingValidation.jpeg" alt="Sprint atual para comprovação de cronograma" width="440" />
+> *O notebook de Pedro Lima teve problemas ao rodar o novo codigo da tela inicial junto com as novas implememntações do projeto, então Andre Montenegro seguiu o codigo de onde Pedro tinha parado onde ele pode atualizar e padronizar o codigo.*
+<img src="Imgs/UsuárioB2CValidation.png" alt="ticket para comprovação de cronograma" width="440" />
 
 
 ##  Integração com Jira
