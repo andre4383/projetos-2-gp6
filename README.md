@@ -129,7 +129,9 @@ Para garantir a estabilidade e o funcionamento correto das principais jornadas d
 Experimentamos a prática de programação em par durante o desenvolvimento desta entrega para compartilhar conhecimento e aumentar a qualidade do código. Abaixo está o relato das funcionalidades desenvolvidas e os respectivos pares:
 
 #### Relato da Experiência
-> *Insira relato de guerra aqui.).*
+> *Reuniões em formato online via semanais na plataforma Discord para alinhamento de ideias e gerenciamento de progresso da sprint.*
+<img src="Imgs/PairProgrammingValidation.jpeg" alt="Sprint atual para comprovação de cronograma" width="440" />
+
 
 ##  Integração com Jira
 Para manter a rastreabilidade do projeto:
