@@ -55,7 +55,7 @@ export default function CalculadoraForm({ onCalculateSuccess }) {
           <select
             value={tipoVeiculo}
             onChange={(e) => setTipoVeiculo(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#00a651] focus:ring-2 focus:ring-[#00a651]/20 cursor-pointer"
+            className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#065f46] focus:ring-2 focus:ring-[#065f46]/20 cursor-pointer"
           >
             <option value="leve">Leve (Carro)</option>
             <option value="pesado">Pesado (Caminhão/Ônibus)</option>
@@ -67,7 +67,7 @@ export default function CalculadoraForm({ onCalculateSuccess }) {
           <select
             value={tipoCombustivel}
             onChange={(e) => setTipoCombustivel(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#00a651] focus:ring-2 focus:ring-[#00a651]/20 cursor-pointer"
+            className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#065f46] focus:ring-2 focus:ring-[#065f46]/20 cursor-pointer"
           >
             <option value="gasolina">Gasolina</option>
             <option value="etanol">Etanol</option>
@@ -82,7 +82,7 @@ export default function CalculadoraForm({ onCalculateSuccess }) {
             min="1"
             value={totalPassagens}
             onChange={(e) => setTotalPassagens(Number(e.target.value))}
-            className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#00a651] focus:ring-2 focus:ring-[#00a651]/20"
+            className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#065f46] focus:ring-2 focus:ring-[#065f46]/20"
           />
         </div>
 
@@ -95,7 +95,7 @@ export default function CalculadoraForm({ onCalculateSuccess }) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#00a651] hover:bg-[#008f47] text-white font-medium text-sm py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00a651]/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
+          className="w-full bg-[#065f46] hover:bg-[#044e3a] text-white font-medium text-sm py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#065f46]/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
         >
           {loading ? "Calculando..." : "Calcular Impacto"}
         </button>
