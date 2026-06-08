@@ -77,7 +77,6 @@ export default function CalculadoraForm({ onCalculateSuccess, onClose }) {
       </div>
 
       <form onSubmit={handleCalcular} className="flex flex-col gap-4">
-        {/* Nome Completo */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             Nome Completo
@@ -92,7 +91,6 @@ export default function CalculadoraForm({ onCalculateSuccess, onClose }) {
           />
         </div>
 
-        {/* Email */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             E-mail
@@ -107,7 +105,6 @@ export default function CalculadoraForm({ onCalculateSuccess, onClose }) {
           />
         </div>
 
-        {/* Marca e Modelo lado a lado */}
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -181,7 +178,6 @@ export default function CalculadoraForm({ onCalculateSuccess, onClose }) {
           </div>
         </div>
 
-        {/* Tipo de Combustível */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             Tipo de Combustível
@@ -192,10 +188,7 @@ export default function CalculadoraForm({ onCalculateSuccess, onClose }) {
             className={`${inputClass} cursor-pointer`}
           >
             <option value="GASOLINA">Gasolina</option>
-            <option value="ETANOL">Etanol</option>
             <option value="DIESEL">Diesel</option>
-            <option value="ELETRICO">Elétrico</option>
-            <option value="HIBRIDO">Híbrido</option>
           </select>
         </div>
 
