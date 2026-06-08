@@ -99,7 +99,7 @@ Abaixo, detalhamos o cronograma planejado para as Sprints do projeto:
 <table>
   <tr>
     <td align="center" valign="top" width="50%">
-      <img src="Imgs/jirasprint1.4.JPG" alt="Sprint atual para comprovação de cronograma" width="440" />
+      <img src="Imgs/jirasprint1.5.png" alt="Sprint atual para comprovação de cronograma" width="440" />
     </td>
   </tr>
 </table>
