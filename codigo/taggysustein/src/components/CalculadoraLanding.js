@@ -12,94 +12,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-
-function SearchableSelect({
-  label,
-  placeholder,
-  items,
-  value,
-  onChange,
-  disabled,
-}) {
-  const [open, setOpen] = useState(false);
-
-  const safeItems = items || [];
-
-  return (
-    <div className="w-full">
-      <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-        {label}
-      </label>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <button
-            suppressHydrationWarning
-            disabled={disabled}
-            type="button"
-            className="flex items-center justify-between w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow disabled:opacity-60 disabled:cursor-not-allowed text-left"
-          >
-            <span className="truncate">
-              {value
-                ? safeItems.find((item) => item.valor === value)?.nome ||
-                  placeholder
-                : placeholder}
-            </span>
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent
-          className="w-[var(--radix-popover-trigger-width)] p-0"
-          align="start"
-        >
-          <Command>
-            <CommandInput placeholder={`Buscar ${label.toLowerCase()}...`} />
-            <CommandList>
-              <CommandEmpty>Nenhum resultado.</CommandEmpty>
-              <CommandGroup>
-                {safeItems.map((item) => (
-                  <CommandItem
-                    key={item.valor}
-                    value={item.nome}
-                    onSelect={() => {
-                      onChange(item.valor, item.nome);
-                      setOpen(false);
-                    }}
-                  >
-                    <Check
-                      className={`mr-2 h-4 w-4 ${value === item.valor ? "opacity-100" : "opacity-0"}`}
-                    />
-                    {item.nome}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-    </div>
-  );
-}
+import SearchableSelect from "./SearchableSelect";
 
 export default function CalculadoraLanding() {
   const containerRef = useRef(null);
   const [tipoVeiculo, setTipoVeiculo] = useState("Leve");
   const [pedagiosPorMes, setPedagiosPorMes] = useState("40");
   const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [valorMedio, setValorMedio] = useState("8,50");
+    const [email, setEmail] = useState("");
 
   // FIPE
   const [marcas, setMarcas] = useState([]);
@@ -130,7 +50,6 @@ export default function CalculadoraLanding() {
       !anoSelecionado ||
       !modeloSelecionado ||
       !marcaSelecionada ||
-      !valorMedio ||
       !pedagiosPorMes
     ) {
       setErrorMessage("Por favor, preencha todos os campos obrigatórios.");
@@ -152,20 +71,37 @@ export default function CalculadoraLanding() {
       anoCalculo = new Date().getFullYear();
 
     try {
-      // Simulando a requisição para a API (Mock), já que a rota /calculo/impacto ainda não existe no Java
-      // const response = await fetch("http://localhost:8080/api/v1/calculo/impacto", { ... })
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simula tempo de rede
+      const payload = {
+        nomeCompleto: nome,
+        email: email,
+        marcaVeiculo: marcaNome,
+        modeloVeiculo: modeloNome,
+        anoVeiculo: anoNome === "Zero km" ? new Date().getFullYear() : parseInt(anoNome),
+        totalPassagensPedagio: parseInt(pedagiosPorMes),
+        totalPassagensEstacionamento: 0,
+        fuelType: "GASOLINA"
+      };
+
+      const response = await fetch("http://127.0.0.1:8080/api/v1/calculo/impacto-simplificado", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao calcular impacto. Verifique o servidor.");
+      }
+
+      const data = await response.json();
       
-      const data = {
-        gramasCo2Evitados: Math.floor(Math.random() * 5000) + 2000,
-        arvoresEquivalentes: Math.floor(Math.random() * 5) + 1,
-        percentualReducao: Math.floor(Math.random() * 15) + 5
-      };
       const resultadoCompleto = {
-        ...data,
+        gramasCo2Evitados: data.gramasCo2Evitados,
+        arvoresEquivalentes: data.arvoresEquivalentes,
+        litrosCombustivelEvitados: data.litrosCombustivelEvitados,
+        percentualReducao: 15,
         pedagiosPorMes,
-        valorMedio: Number(valorMedio.replace(",", ".")),
       };
+      
       localStorage.setItem(
         "taggySustainResultado",
         JSON.stringify(resultadoCompleto),
@@ -174,7 +110,7 @@ export default function CalculadoraLanding() {
     } catch (err) {
       console.error(err);
       if (err.name === "TypeError" && err.message.includes("fetch")) {
-        setErrorMessage("O backend Java não está rodando na porta 8080 ou está bloqueando a conexão (CORS).");
+        setErrorMessage("O backend Java não está rodando na porta 8081 ou está bloqueando a conexão (CORS).");
       } else {
         setErrorMessage(err.message || "Falha de conexão com a API.");
       }
@@ -516,22 +452,7 @@ export default function CalculadoraLanding() {
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest mb-4">
                 Uso Mensal
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="valorMedio"
-                    className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
-                  >
-                    Média por Pedágio (R$)
-                  </label>
-                  <input
-                    id="valorMedio"
-                    type="text"
-                    value={valorMedio}
-                    onChange={(e) => setValorMedio(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
-                  />
-                </div>
+              <div className="grid grid-cols-1 gap-4">
                 <div>
                   <label
                     htmlFor="pedagiosPorMes"

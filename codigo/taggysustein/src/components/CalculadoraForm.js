@@ -22,9 +22,14 @@ export default function CalculadoraForm({ onCalculateSuccess }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            tipoVeiculo,
-            tipoCombustivel,
-            totalPassagens,
+            nomeCompleto,
+            email,
+            marcaVeiculo,
+            modeloVeiculo,
+            anoVeiculo,
+            totalPassagensPedagio,
+            totalPassagensEstacionamento,
+            fuelType,
           }),
         },
       );
@@ -46,12 +51,16 @@ export default function CalculadoraForm({ onCalculateSuccess }) {
   return (
     <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 mx-auto mt-10 border border-gray-100">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">Calculadora de Emissão de CO₂</h2>
+        <h2 className="text-xl font-semibold text-gray-900">
+          Calculadora de Emissão de CO₂
+        </h2>
       </div>
 
       <form onSubmit={handleCalcular} className="flex flex-col gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipo de Veículo</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            Tipo de Veículo
+          </label>
           <select
             value={tipoVeiculo}
             onChange={(e) => setTipoVeiculo(e.target.value)}
@@ -63,7 +72,9 @@ export default function CalculadoraForm({ onCalculateSuccess }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipo de Combustível</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            Tipo de Combustível
+          </label>
           <select
             value={tipoCombustivel}
             onChange={(e) => setTipoCombustivel(e.target.value)}
@@ -76,7 +87,9 @@ export default function CalculadoraForm({ onCalculateSuccess }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Total de Passagens</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            Total de Passagens
+          </label>
           <input
             type="number"
             min="1"

@@ -125,24 +125,11 @@ export default function FormularioLogin() {
       return;
     }
 
-    const allowedMockUsers = {
-      "admin@taggy.com": "Afonso H.",
-      "teste@teste.com": "Usuário Teste",
-      "camila@email.com": "Camila",
-      "helena@email.com": "Helena",
-    };
-
-    if (allowedMockUsers[email]) {
-      localStorage.setItem("userName", allowedMockUsers[email]);
-      router.push("/dashboard");
-      return;
-    }
-
     setLoading(true);
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/usuario/login",
+        "http://127.0.0.1:8080/api/v1/usuario/login",
         {
           method: "POST",
           headers: {
@@ -173,8 +160,12 @@ export default function FormularioLogin() {
           }
           finalName = formattedName;
         }
-
+        
         localStorage.setItem("userName", finalName);
+        if (userData.userId) {
+          localStorage.setItem("userId", userData.userId);
+        }
+        
         router.push("/dashboard");
       } else {
         try {
@@ -185,7 +176,8 @@ export default function FormularioLogin() {
         }
       }
     } catch (err) {
-      setErro("Erro de conexão com o servidor. O backend está rodando?");
+      console.error("Backend indisponível.", err);
+      setErro("Não foi possível conectar ao servidor. Tente novamente mais tarde.");
     } finally {
       setLoading(false);
     }

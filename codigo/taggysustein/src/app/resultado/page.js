@@ -64,8 +64,6 @@ export default function ResultadoPage() {
   const arvores = resultado.arvoresEquivalentes || 0;
   
   const pedagios = resultado.pedagiosPorMes || 0;
-  const valor = resultado.valorMedio || 0;
-  const economiaTotal = ((pedagios * valor * 0.05) + (co2EvitadoNum * 2.5)).toFixed(2).replace(".", ",");
   const minutosEconomizados = Math.round(pedagios * 2.5);
 
   return (
@@ -142,20 +140,7 @@ export default function ResultadoPage() {
               </div>
             </div>
 
-            {/* Card 2: Economia (Dark Green) */}
-            <div className="anim-card bg-[#0A3B24] rounded-2xl p-6 border border-[#062617] flex items-center justify-between shadow-md">
-              <div className="pr-4">
-                <h3 className="text-lg font-medium text-white mb-1">Economia em Escala</h3>
-                <p className="text-sm text-[#D1E0D7] mb-4">Suporta seu crescimento reduzindo custos de pedágio e combustível.</p>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-lg text-[#9BB596]">R$</span>
-                  <span className="text-4xl font-medium text-white tracking-tight">{economiaTotal}</span>
-                </div>
-              </div>
-              <div className="w-32 h-32 rounded-xl bg-[#1E331B] overflow-hidden shrink-0 hidden sm:block">
-                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=400&auto=format&fit=crop" alt="Mountains" className="w-full h-full object-cover opacity-80 mix-blend-luminosity"/>
-              </div>
-            </div>
+
 
             {/* Card 3: Tempo e Árvores */}
             <div className="anim-card bg-white rounded-2xl p-6 border border-emerald-50 flex items-center justify-between shadow-sm">
