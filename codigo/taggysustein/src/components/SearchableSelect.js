@@ -38,7 +38,7 @@ export default function SearchableSelect({
             suppressHydrationWarning
             disabled={disabled}
             type="button"
-            className="flex items-center justify-between w-full bg-[#F9FAFB] border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#065f46] focus:ring-1 focus:ring-[#065f46] transition-all disabled:opacity-60 disabled:cursor-not-allowed text-left"
+            className="flex items-center justify-between w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-300 transition-all disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed text-left"
           >
             <span className="truncate">
               {value

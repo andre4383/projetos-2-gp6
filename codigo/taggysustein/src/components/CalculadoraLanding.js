@@ -16,8 +16,9 @@ import SearchableSelect from "./SearchableSelect";
 
 export default function CalculadoraLanding() {
   const containerRef = useRef(null);
-  const [tipoVeiculo, setTipoVeiculo] = useState("Leve");
   const [pedagiosPorMes, setPedagiosPorMes] = useState("40");
+  const [estacionamentosPorMes, setEstacionamentosPorMes] = useState("0");
+  const [fuelType, setFuelType] = useState("GASOLINE");
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
 
@@ -50,7 +51,9 @@ export default function CalculadoraLanding() {
       !anoSelecionado ||
       !modeloSelecionado ||
       !marcaSelecionada ||
-      !pedagiosPorMes
+      !pedagiosPorMes ||
+      !estacionamentosPorMes ||
+      !fuelType
     ) {
       setErrorMessage("Por favor, preencha todos os campos obrigatórios.");
       setIsErrorModalOpen(true);
@@ -78,9 +81,12 @@ export default function CalculadoraLanding() {
         modeloVeiculo: modeloNome,
         anoVeiculo:
           anoNome === "Zero km" ? new Date().getFullYear() : parseInt(anoNome),
-        totalPassagensPedagio: parseInt(pedagiosPorMes),
-        totalPassagensEstacionamento: 0,
-        fuelType: "GASOLINA",
+        totalPassagensPedagio: parseInt(pedagiosPorMes) || 0,
+        totalPassagensEstacionamento: parseInt(estacionamentosPorMes) || 0,
+        fuelType: fuelType,
+        gramasPapelEvitados: 0.0,
+        tempoGanhoSegundos: 0,
+        litrosCombustivelEvitados: 0.0,
       };
 
       const response = await fetch(
@@ -93,7 +99,14 @@ export default function CalculadoraLanding() {
       );
 
       if (!response.ok) {
-        throw new Error("Erro ao calcular impacto. Verifique o servidor.");
+        let errorText = await response.text();
+        try {
+          const jsonError = JSON.parse(errorText);
+          if (jsonError.message || jsonError.error) {
+            errorText = jsonError.message || jsonError.error;
+          }
+        } catch (e) {}
+        throw new Error(`Erro ${response.status}: ${errorText}`);
       }
 
       const data = await response.json();
@@ -102,6 +115,8 @@ export default function CalculadoraLanding() {
         gramasCo2Evitados: data.gramasCo2Evitados,
         arvoresEquivalentes: data.arvoresEquivalentes,
         litrosCombustivelEvitados: data.litrosCombustivelEvitados,
+        gramasPapelEvitados: data.gramasPapelEvitados,
+        tempoGanhoSegundos: data.tempoGanhoSegundos,
         percentualReducao: 15,
         pedagiosPorMes,
       };
@@ -130,7 +145,7 @@ export default function CalculadoraLanding() {
     const fetchMarcas = async () => {
       setLoadingFipe(true);
       try {
-        const tipoFipe = tipoVeiculo === "Leve" ? "carros" : "caminhoes";
+        const tipoFipe = "carros";
         const res = await fetch(
           `https://parallelum.com.br/fipe/api/v1/${tipoFipe}/marcas`,
         );
@@ -183,7 +198,7 @@ export default function CalculadoraLanding() {
       }
     };
     fetchMarcas();
-  }, [tipoVeiculo]);
+  }, []);
 
   useEffect(() => {
     const fetchModelos = async () => {
@@ -306,10 +321,10 @@ export default function CalculadoraLanding() {
 
         let uniqueModelNames = [];
 
-        if (tipoVeiculo === "Leve" && whitelistMap[nomeDaMarca]) {
+        if (whitelistMap[nomeDaMarca]) {
           uniqueModelNames = whitelistMap[nomeDaMarca];
         } else {
-          const tipoFipe = tipoVeiculo === "Leve" ? "carros" : "caminhoes";
+          const tipoFipe = "carros";
           const res = await fetch(
             `https://parallelum.com.br/fipe/api/v1/${tipoFipe}/marcas/${marcaSelecionada}/modelos`,
           );
@@ -367,7 +382,7 @@ export default function CalculadoraLanding() {
       }
     };
     fetchModelos();
-  }, [marcaSelecionada, tipoVeiculo]);
+  }, [marcaSelecionada]);
 
   // Buscar anos ao selecionar modelo
   useEffect(() => {
@@ -387,7 +402,7 @@ export default function CalculadoraLanding() {
     setAnos(staticYears);
     setAnoSelecionado("");
     setLoadingFipe(false);
-  }, [modeloSelecionado, marcaSelecionada, tipoVeiculo]);
+  }, [modeloSelecionado, marcaSelecionada]);
 
   useGSAP(
     () => {
@@ -457,23 +472,6 @@ export default function CalculadoraLanding() {
                 </h3>
               </div>
               <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="w-full">
-                  <label
-                    htmlFor="tipoVeiculo"
-                    className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
-                  >
-                    Tipo
-                  </label>
-                  <select
-                    id="tipoVeiculo"
-                    value={tipoVeiculo}
-                    onChange={(e) => setTipoVeiculo(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow cursor-pointer"
-                  >
-                    <option value="Leve">Leve (Carro/Moto)</option>
-                    <option value="Pesado">Pesado (Caminhão/Ônibus)</option>
-                  </select>
-                </div>
                 <SearchableSelect
                   label="Marca"
                   placeholder="Selecione a marca..."
@@ -485,8 +483,6 @@ export default function CalculadoraLanding() {
                   }}
                   disabled={loadingFipe || marcas.length === 0}
                 />
-              </div>
-              <div className="grid grid-cols-2 gap-4 mb-4">
                 <SearchableSelect
                   label="Modelo"
                   placeholder="Selecione o modelo..."
@@ -500,6 +496,8 @@ export default function CalculadoraLanding() {
                     loadingFipe || modelos.length === 0 || !marcaSelecionada
                   }
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <SearchableSelect
                   label="Ano"
                   placeholder="Selecione o ano..."
@@ -513,6 +511,24 @@ export default function CalculadoraLanding() {
                     loadingFipe || anos.length === 0 || !modeloSelecionado
                   }
                 />
+                <div className="w-full">
+                  <label
+                    htmlFor="fuelType"
+                    className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
+                  >
+                    Tipo de Combustível
+                  </label>
+                  <select
+                    id="fuelType"
+                    value={fuelType}
+                    onChange={(e) => setFuelType(e.target.value)}
+                    disabled={loading}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow cursor-pointer disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                  >
+                    <option value="GASOLINE">Gasolina</option>
+                    <option value="DIESEL">Diesel</option>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -537,7 +553,8 @@ export default function CalculadoraLanding() {
                     placeholder="Seu nome"
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
+                    disabled={loading}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                   />
                 </div>
                 <div>
@@ -553,7 +570,8 @@ export default function CalculadoraLanding() {
                     placeholder="seu@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
+                    disabled={loading}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -566,20 +584,39 @@ export default function CalculadoraLanding() {
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest mb-4">
                 Uso Mensal
               </h3>
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label
                     htmlFor="pedagiosPorMes"
                     className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
                   >
-                    Qtd. de Passagens
+                    Passagens de Pedágio
                   </label>
                   <input
                     id="pedagiosPorMes"
                     type="number"
+                    min="0"
                     value={pedagiosPorMes}
                     onChange={(e) => setPedagiosPorMes(e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
+                    disabled={loading}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="estacionamentosPorMes"
+                    className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
+                  >
+                    Passagens de Estacionamento
+                  </label>
+                  <input
+                    id="estacionamentosPorMes"
+                    type="number"
+                    min="0"
+                    value={estacionamentosPorMes}
+                    onChange={(e) => setEstacionamentosPorMes(e.target.value)}
+                    disabled={loading}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                   />
                 </div>
               </div>

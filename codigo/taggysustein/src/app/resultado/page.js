@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, TreePine } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
@@ -64,7 +64,8 @@ export default function ResultadoPage() {
   const arvores = resultado.arvoresEquivalentes || 0;
   
   const pedagios = resultado.pedagiosPorMes || 0;
-  const minutosEconomizados = Math.round(pedagios * 2.5);
+  const minutosEconomizados = resultado.tempoGanhoSegundos ? Math.round(resultado.tempoGanhoSegundos / 60) : Math.round(pedagios * 2.5);
+  const gramasPapel = resultado.gramasPapelEvitados || 0;
 
   return (
     <div 
@@ -142,16 +143,33 @@ export default function ResultadoPage() {
 
 
 
-            {/* Card 3: Tempo e Árvores */}
+            {/* Card 2: Árvores (Destaque Verde) */}
+            <div className="anim-card bg-emerald-600 rounded-2xl p-6 shadow-md text-white relative overflow-hidden flex items-center justify-between">
+              <div className="relative z-10 w-full">
+                <div className="flex items-center gap-2 mb-1">
+                  <TreePine className="w-5 h-5 text-emerald-200" />
+                  <h3 className="text-lg font-medium">Árvores Equivalentes</h3>
+                </div>
+                <p className="text-sm text-emerald-100/90 mb-4 max-w-[80%]">Volume de absorção natural equivalente às emissões evitadas na atmosfera.</p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-semibold tracking-tight">{arvores}</span>
+                  <span className="text-emerald-100 font-medium">árvores</span>
+                </div>
+              </div>
+              {/* Ícone gigante no fundo */}
+              <TreePine className="w-32 h-32 text-emerald-400 absolute -right-6 -bottom-6 opacity-30 rotate-12 pointer-events-none" />
+            </div>
+
+            {/* Card 3: Impactos Secundários */}
             <div className="anim-card bg-white rounded-2xl p-6 border border-emerald-50 flex items-center justify-between shadow-sm">
               <div className="pr-4 w-full">
-                <h3 className="text-lg font-medium text-gray-900 mb-1">Foco no Longo Prazo</h3>
-                <p className="text-sm text-gray-500 mb-4">Construído para suportar infraestrutura durável e resiliente ao longo do tempo.</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-1">Impactos Adicionais</h3>
+                <p className="text-sm text-gray-500 mb-4">Eficiência de tempo e economia de recursos físicos diários.</p>
                 
-                <div className="flex gap-8">
+                <div className="flex gap-8 sm:gap-12">
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold mb-1">Árvores Salvas</p>
-                    <p className="text-2xl font-medium text-gray-900">{arvores}</p>
+                    <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold mb-1">Papel Evitado</p>
+                    <p className="text-2xl font-medium text-gray-900">{gramasPapel} <span className="text-sm text-gray-500">g</span></p>
                   </div>
                   <div>
                     <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold mb-1">Tempo Ganho</p>

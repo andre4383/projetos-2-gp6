@@ -21,7 +21,6 @@ export default function AnaliseImpacto({ userName }) {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
 
-  // Start with current year-month
   const [selectedMonth, setSelectedMonth] = useState("2026-03");
   const containerRef = useRef(null);
 
@@ -108,10 +107,7 @@ export default function AnaliseImpacto({ userName }) {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <MonthPicker 
-            value={selectedMonth} 
-            onChange={setSelectedMonth} 
-          />
+          <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
         </div>
       </div>
 

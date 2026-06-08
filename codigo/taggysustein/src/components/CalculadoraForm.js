@@ -1,9 +1,17 @@
 import { useState } from "react";
 
-export default function CalculadoraForm({ onCalculateSuccess }) {
-  const [tipoVeiculo, setTipoVeiculo] = useState("leve");
-  const [tipoCombustivel, setTipoCombustivel] = useState("gasolina");
-  const [totalPassagens, setTotalPassagens] = useState(1);
+const currentYear = new Date().getFullYear();
+
+export default function CalculadoraForm({ onCalculateSuccess, onClose }) {
+  const [nomeCompleto, setNomeCompleto] = useState("");
+  const [email, setEmail] = useState("");
+  const [marcaVeiculo, setMarcaVeiculo] = useState("");
+  const [modeloVeiculo, setModeloVeiculo] = useState("");
+  const [anoVeiculo, setAnoVeiculo] = useState(currentYear);
+  const [totalPassagensPedagio, setTotalPassagensPedagio] = useState(0);
+  const [totalPassagensEstacionamento, setTotalPassagensEstacionamento] =
+    useState(0);
+  const [fuelType, setFuelType] = useState("GASOLINA");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -26,9 +34,9 @@ export default function CalculadoraForm({ onCalculateSuccess }) {
             email,
             marcaVeiculo,
             modeloVeiculo,
-            anoVeiculo,
-            totalPassagensPedagio,
-            totalPassagensEstacionamento,
+            anoVeiculo: Number(anoVeiculo),
+            totalPassagensPedagio: Number(totalPassagensPedagio),
+            totalPassagensEstacionamento: Number(totalPassagensEstacionamento),
             fuelType,
           }),
         },
@@ -48,55 +56,147 @@ export default function CalculadoraForm({ onCalculateSuccess }) {
     }
   };
 
+  const inputClass =
+    "w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#065f46] focus:ring-2 focus:ring-[#065f46]/20";
+
   return (
     <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 mx-auto mt-10 border border-gray-100">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-gray-900">
           Calculadora de Emissão de CO₂
         </h2>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors text-lg leading-none"
+            aria-label="Fechar calculadora"
+          >
+            ✕
+          </button>
+        )}
       </div>
 
       <form onSubmit={handleCalcular} className="flex flex-col gap-4">
+        {/* Nome Completo */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Tipo de Veículo
+            Nome Completo
           </label>
-          <select
-            value={tipoVeiculo}
-            onChange={(e) => setTipoVeiculo(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#065f46] focus:ring-2 focus:ring-[#065f46]/20 cursor-pointer"
-          >
-            <option value="leve">Leve (Carro)</option>
-            <option value="pesado">Pesado (Caminhão/Ônibus)</option>
-          </select>
+          <input
+            type="text"
+            required
+            placeholder="Ex: João Silva"
+            value={nomeCompleto}
+            onChange={(e) => setNomeCompleto(e.target.value)}
+            className={inputClass}
+          />
         </div>
 
+        {/* Email */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            E-mail
+          </label>
+          <input
+            type="email"
+            required
+            placeholder="Ex: joao@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={inputClass}
+          />
+        </div>
+
+        {/* Marca e Modelo lado a lado */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Marca do Veículo
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="Ex: Toyota"
+              value={marcaVeiculo}
+              onChange={(e) => setMarcaVeiculo(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Modelo do Veículo
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="Ex: Corolla"
+              value={modeloVeiculo}
+              onChange={(e) => setModeloVeiculo(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            Ano do Veículo
+          </label>
+          <input
+            type="number"
+            required
+            min="1900"
+            max={currentYear + 1}
+            value={anoVeiculo}
+            onChange={(e) => setAnoVeiculo(e.target.value)}
+            className={inputClass}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Passagens de Pedágio
+            </label>
+            <input
+              type="number"
+              required
+              min="0"
+              value={totalPassagensPedagio}
+              onChange={(e) => setTotalPassagensPedagio(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Passagens de Estacionamento
+            </label>
+            <input
+              type="number"
+              required
+              min="0"
+              value={totalPassagensEstacionamento}
+              onChange={(e) => setTotalPassagensEstacionamento(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+        </div>
+
+        {/* Tipo de Combustível */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             Tipo de Combustível
           </label>
           <select
-            value={tipoCombustivel}
-            onChange={(e) => setTipoCombustivel(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#065f46] focus:ring-2 focus:ring-[#065f46]/20 cursor-pointer"
+            value={fuelType}
+            onChange={(e) => setFuelType(e.target.value)}
+            className={`${inputClass} cursor-pointer`}
           >
-            <option value="gasolina">Gasolina</option>
-            <option value="etanol">Etanol</option>
-            <option value="diesel">Diesel</option>
+            <option value="GASOLINA">Gasolina</option>
+            <option value="ETANOL">Etanol</option>
+            <option value="DIESEL">Diesel</option>
+            <option value="ELETRICO">Elétrico</option>
+            <option value="HIBRIDO">Híbrido</option>
           </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Total de Passagens
-          </label>
-          <input
-            type="number"
-            min="1"
-            value={totalPassagens}
-            onChange={(e) => setTotalPassagens(Number(e.target.value))}
-            className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#065f46] focus:ring-2 focus:ring-[#065f46]/20"
-          />
         </div>
 
         {error && (
