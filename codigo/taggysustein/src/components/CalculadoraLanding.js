@@ -19,7 +19,7 @@ export default function CalculadoraLanding() {
   const [tipoVeiculo, setTipoVeiculo] = useState("Leve");
   const [pedagiosPorMes, setPedagiosPorMes] = useState("40");
   const [nome, setNome] = useState("");
-    const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
 
   // FIPE
   const [marcas, setMarcas] = useState([]);
@@ -76,24 +76,28 @@ export default function CalculadoraLanding() {
         email: email,
         marcaVeiculo: marcaNome,
         modeloVeiculo: modeloNome,
-        anoVeiculo: anoNome === "Zero km" ? new Date().getFullYear() : parseInt(anoNome),
+        anoVeiculo:
+          anoNome === "Zero km" ? new Date().getFullYear() : parseInt(anoNome),
         totalPassagensPedagio: parseInt(pedagiosPorMes),
         totalPassagensEstacionamento: 0,
-        fuelType: "GASOLINA"
+        fuelType: "GASOLINA",
       };
 
-      const response = await fetch("http://127.0.0.1:8080/api/v1/calculo/impacto-simplificado", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+      const response = await fetch(
+        "http://127.0.0.1:8080/api/v1/calculo/impacto-simplificado",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
 
       if (!response.ok) {
         throw new Error("Erro ao calcular impacto. Verifique o servidor.");
       }
 
       const data = await response.json();
-      
+
       const resultadoCompleto = {
         gramasCo2Evitados: data.gramasCo2Evitados,
         arvoresEquivalentes: data.arvoresEquivalentes,
@@ -101,7 +105,7 @@ export default function CalculadoraLanding() {
         percentualReducao: 15,
         pedagiosPorMes,
       };
-      
+
       localStorage.setItem(
         "taggySustainResultado",
         JSON.stringify(resultadoCompleto),
@@ -110,7 +114,9 @@ export default function CalculadoraLanding() {
     } catch (err) {
       console.error(err);
       if (err.name === "TypeError" && err.message.includes("fetch")) {
-        setErrorMessage("O backend Java não está rodando na porta 8081 ou está bloqueando a conexão (CORS).");
+        setErrorMessage(
+          "O backend Java não está rodando na porta 8081 ou está bloqueando a conexão (CORS).",
+        );
       } else {
         setErrorMessage(err.message || "Falha de conexão com a API.");
       }
@@ -145,8 +151,10 @@ export default function CalculadoraLanding() {
 
         let mappedData = (Array.isArray(data) ? data : []).map((item) => {
           let nomeLimpo = item.nome;
-          if (nomeLimpo.toUpperCase() === "GM - CHEVROLET") nomeLimpo = "Chevrolet";
-          if (nomeLimpo.toUpperCase() === "VW - VOLKSWAGEN") nomeLimpo = "Volkswagen";
+          if (nomeLimpo.toUpperCase() === "GM - CHEVROLET")
+            nomeLimpo = "Chevrolet";
+          if (nomeLimpo.toUpperCase() === "VW - VOLKSWAGEN")
+            nomeLimpo = "Volkswagen";
           return {
             nome: nomeLimpo,
             valor: item.codigo || item.valor,
@@ -188,20 +196,112 @@ export default function CalculadoraLanding() {
       }
       setLoadingFipe(true);
       try {
-        const marcaObj = marcas.find(m => m.valor === marcaSelecionada);
+        const marcaObj = marcas.find((m) => m.valor === marcaSelecionada);
         const nomeDaMarca = marcaObj ? marcaObj.nome : "";
 
         const whitelistMap = {
-          "Volkswagen": ["Gol", "Polo", "Fox", "Up!", "Nivus", "T-Cross", "Taos", "Tiguan", "Amarok", "Jetta", "Virtus", "Voyage", "Saveiro"],
-          "Chevrolet": ["Onix", "Prisma", "Cruze", "Tracker", "S10", "Spin", "Cobalt", "Montana", "Celta", "Corsa", "Vectra", "Astra", "Meriva", "Zafira", "Equinox"],
-          "Fiat": ["Argo", "Mobi", "Cronos", "Pulse", "Fastback", "Toro", "Strada", "Fiorino", "Palio", "Uno", "Siena", "Grand Siena", "Punto", "Idea", "Bravo"],
-          "Ford": ["Ka", "Fiesta", "Focus", "EcoSport", "Ranger", "Fusion", "Mustang", "Territory", "Bronco"],
-          "Toyota": ["Corolla", "Hilux", "Yaris", "Etios", "RAV4", "SW4", "Corolla Cross"],
-          "Honda": ["Civic", "Fit", "HR-V", "City", "CR-V", "WR-V", "Accord", "ZR-V"],
-          "Hyundai": ["HB20", "HB20S", "Creta", "Tucson", "Santa Fe", "Azera", "Elantra", "i30", "IX35"],
-          "Renault": ["Kwid", "Sandero", "Logan", "Duster", "Captur", "Oroch", "Fluence", "Clio"],
-          "Jeep": ["Renegade", "Compass", "Commander", "Wrangler", "Cherokee"],
-          "Nissan": ["Kicks", "Versa", "Sentra", "Frontier", "March"]
+          Volkswagen: [
+            "Gol",
+            "Polo",
+            "Fox",
+            "Up!",
+            "Nivus",
+            "T-Cross",
+            "Taos",
+            "Tiguan",
+            "Amarok",
+            "Jetta",
+            "Virtus",
+            "Voyage",
+            "Saveiro",
+          ],
+          Chevrolet: [
+            "Onix",
+            "Prisma",
+            "Cruze",
+            "Tracker",
+            "S10",
+            "Spin",
+            "Cobalt",
+            "Montana",
+            "Celta",
+            "Corsa",
+            "Vectra",
+            "Astra",
+            "Meriva",
+            "Zafira",
+            "Equinox",
+          ],
+          Fiat: [
+            "Argo",
+            "Mobi",
+            "Cronos",
+            "Pulse",
+            "Fastback",
+            "Toro",
+            "Strada",
+            "Fiorino",
+            "Palio",
+            "Uno",
+            "Siena",
+            "Grand Siena",
+            "Punto",
+            "Idea",
+            "Bravo",
+          ],
+          Ford: [
+            "Ka",
+            "Fiesta",
+            "Focus",
+            "EcoSport",
+            "Ranger",
+            "Fusion",
+            "Mustang",
+            "Territory",
+            "Bronco",
+          ],
+          Toyota: [
+            "Corolla",
+            "Hilux",
+            "Yaris",
+            "Etios",
+            "RAV4",
+            "SW4",
+            "Corolla Cross",
+          ],
+          Honda: [
+            "Civic",
+            "Fit",
+            "HR-V",
+            "City",
+            "CR-V",
+            "WR-V",
+            "Accord",
+            "ZR-V",
+          ],
+          Hyundai: [
+            "HB20",
+            "HB20S",
+            "Creta",
+            "Tucson",
+            "Santa Fe",
+            "Azera",
+            "Elantra",
+            "i30",
+            "IX35",
+          ],
+          Renault: [
+            "Kwid",
+            "Sandero",
+            "Logan",
+            "Duster",
+            "Captur",
+            "Oroch",
+            "Fluence",
+            "Clio",
+          ],
+          Jeep: ["Renegade", "Compass", "Commander", "Wrangler", "Cherokee"],
+          Nissan: ["Kicks", "Versa", "Sentra", "Frontier", "March"],
         };
 
         let uniqueModelNames = [];
@@ -215,7 +315,7 @@ export default function CalculadoraLanding() {
           );
           const data = await res.json();
           const modelosRaw = Array.isArray(data) ? data : data.modelos || [];
-          
+
           const getBaseModel = (name) => {
             const parts = name
               .replace(/\(novo\)/gi, "")
@@ -223,7 +323,21 @@ export default function CalculadoraLanding() {
               .trim()
               .split(" ");
             let base = parts[0];
-            const twoWordBases = ["Grand", "Santa", "Land", "Range", "Aston", "Alfa", "C3", "C4", "Palio", "Space", "Cross", "Eco", "T-Cross"];
+            const twoWordBases = [
+              "Grand",
+              "Santa",
+              "Land",
+              "Range",
+              "Aston",
+              "Alfa",
+              "C3",
+              "C4",
+              "Palio",
+              "Space",
+              "Cross",
+              "Eco",
+              "T-Cross",
+            ];
             if (parts.length > 1 && twoWordBases.includes(base)) {
               base += " " + parts[1];
             }
