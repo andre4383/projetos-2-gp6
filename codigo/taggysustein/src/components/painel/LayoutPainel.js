@@ -28,6 +28,7 @@ import Veiculos from "./Veiculos";
 import ModalExportar from "./ModalExportar";
 import RelatorioImpacto from "./RelatorioImpacto";
 import SeletorMes from "./SeletorMes";
+import Simulador from "../calculadora/Simulador";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -666,218 +667,218 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                         </div>
                       </div>
 
-                        <div className="h-56 w-full relative flex items-end justify-between border-b border-gray-100 pb-2">
-                          <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-gray-400 font-medium pb-2">
-                            <span>40k</span>
-                            <span>30k</span>
-                            <span>20k</span>
-                            <span>10k</span>
-                            <span>0k</span>
-                          </div>
-
-                          <div className="absolute left-6 right-0 top-0 h-full flex flex-col justify-between pb-2 z-0">
-                            {[1, 2, 3, 4, 5].map((i) => (
-                              <div
-                                key={i}
-                                className="w-full border-t border-dashed border-gray-100"
-                              ></div>
-                            ))}
-                          </div>
-
-                          <div className="ml-8 w-full h-full flex items-end justify-between px-2 z-10">
-                            {dashboardData.impactChart.map((val, i) => (
-                              <div
-                                key={i}
-                                className="flex flex-col gap-[2px] w-4 items-center justify-end chart-bar-anim"
-                                style={{ height: `${val}%` }}
-                              >
-                                <div
-                                  className="w-full bg-emerald-100 rounded-[1px]"
-                                  style={{ flex: 0.4 }}
-                                ></div>
-                                <div
-                                  className="w-full bg-[#065f46] rounded-[1px]"
-                                  style={{ flex: 0.6 }}
-                                ></div>
-                              </div>
-                            ))}
-                          </div>
+                      <div className="h-56 w-full relative flex items-end justify-between border-b border-gray-100 pb-2">
+                        <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-gray-400 font-medium pb-2">
+                          <span>40k</span>
+                          <span>30k</span>
+                          <span>20k</span>
+                          <span>10k</span>
+                          <span>0k</span>
                         </div>
 
-                        <div className="ml-8 mt-3 flex justify-between px-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
-                          <span>JAN</span>
-                          <span>FEV</span>
-                          <span>MAR</span>
-                          <span>ABR</span>
-                          <span>MAI</span>
-                          <span>JUN</span>
-                          <span>JUL</span>
-                          <span>AGO</span>
-                          <span>SET</span>
-                          <span>OUT</span>
-                          <span>NOV</span>
-                          <span>DEZ</span>
+                        <div className="absolute left-6 right-0 top-0 h-full flex flex-col justify-between pb-2 z-0">
+                          {[1, 2, 3, 4, 5].map((i) => (
+                            <div
+                              key={i}
+                              className="w-full border-t border-dashed border-gray-100"
+                            ></div>
+                          ))}
+                        </div>
+
+                        <div className="ml-8 w-full h-full flex items-end justify-between px-2 z-10">
+                          {dashboardData.impactChart.map((val, i) => (
+                            <div
+                              key={i}
+                              className="flex flex-col gap-[2px] w-4 items-center justify-end chart-bar-anim"
+                              style={{ height: `${val}%` }}
+                            >
+                              <div
+                                className="w-full bg-emerald-100 rounded-[1px]"
+                                style={{ flex: 0.4 }}
+                              ></div>
+                              <div
+                                className="w-full bg-[#065f46] rounded-[1px]"
+                                style={{ flex: 0.6 }}
+                              ></div>
+                            </div>
+                          ))}
                         </div>
                       </div>
 
-                      <div className="dash-metric-card bg-[#065f46] border border-[#044e3a] rounded-xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:bg-[#054d38] transition-colors h-full">
-                        <div className="flex justify-between items-start mb-4">
-                          <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
-                            <Trees
-                              className="w-6 h-6 text-white"
-                              strokeWidth={2}
-                            />
-                          </div>
-                          <div className="text-right">
-                            <div className="text-sm font-bold text-emerald-300">
-                              {dashboardData.trees.trend}
-                            </div>
-                            <div className="text-xs text-emerald-200">
-                              {dashboardData.trees.trendDesc}
-                            </div>
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3 className="text-[10px] font-semibold text-emerald-100 uppercase tracking-widest">
-                              {dashboardData.trees.title}
-                            </h3>
-                            <div className="w-4 h-4 rounded-full bg-white/10 flex items-center justify-center text-emerald-100 text-[10px] relative group cursor-help">
-                              ?
-                              <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] bg-gray-900 text-white text-[10px] p-2 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-lg z-20 font-normal normal-case tracking-normal text-left">
-                                {dashboardData.trees.tooltip}
-                                <div className="absolute top-full left-1.5 border-4 border-transparent border-t-gray-900"></div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-5xl font-bold text-white tracking-tight mb-2">
-                            {dashboardData.trees.value}
-                          </div>
-                          <div className="w-full bg-[#044e3a] h-1.5 rounded-full overflow-hidden mt-4">
-                            <div className="bg-emerald-400 h-full w-[75%] rounded-full"></div>
-                          </div>
-                        </div>
+                      <div className="ml-8 mt-3 flex justify-between px-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
+                        <span>JAN</span>
+                        <span>FEV</span>
+                        <span>MAR</span>
+                        <span>ABR</span>
+                        <span>MAI</span>
+                        <span>JUN</span>
+                        <span>JUL</span>
+                        <span>AGO</span>
+                        <span>SET</span>
+                        <span>OUT</span>
+                        <span>NOV</span>
+                        <span>DEZ</span>
                       </div>
                     </div>
 
-                    <div className="dash-chart-card bg-white border border-gray-200 rounded-xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] mt-6">
-                      <div className="flex justify-between items-start md:items-center mb-5 flex-col md:flex-row gap-4 md:gap-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
-                            HISTÓRICO RECENTE
+                    <div className="dash-metric-card bg-[#065f46] border border-[#044e3a] rounded-xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:bg-[#054d38] transition-colors h-full">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
+                          <Trees
+                            className="w-6 h-6 text-white"
+                            strokeWidth={2}
+                          />
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm font-bold text-emerald-300">
+                            {dashboardData.trees.trend}
+                          </div>
+                          <div className="text-xs text-emerald-200">
+                            {dashboardData.trees.trendDesc}
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="text-[10px] font-semibold text-emerald-100 uppercase tracking-widest">
+                            {dashboardData.trees.title}
                           </h3>
-                          <div className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px] relative group cursor-help">
+                          <div className="w-4 h-4 rounded-full bg-white/10 flex items-center justify-center text-emerald-100 text-[10px] relative group cursor-help">
                             ?
-                            <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] bg-gray-800 text-white text-[10px] p-2 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-lg z-20 font-normal normal-case tracking-normal text-left">
-                              Últimas transações registradas.
-                              <div className="absolute top-full left-1.5 border-4 border-transparent border-t-gray-800"></div>
+                            <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] bg-gray-900 text-white text-[10px] p-2 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-lg z-20 font-normal normal-case tracking-normal text-left">
+                              {dashboardData.trees.tooltip}
+                              <div className="absolute top-full left-1.5 border-4 border-transparent border-t-gray-900"></div>
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                          <div className="relative flex-1 md:flex-none">
-                            <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                            <input
-                              type="text"
-                              placeholder="Buscar transações..."
-                              className="w-full md:w-48 bg-[#F9FAFB] border border-gray-200 rounded-md py-1.5 pl-8 pr-3 text-xs outline-none focus:border-[#065f46] focus:ring-1 focus:ring-[#065f46] focus:bg-white transition-colors"
-                            />
-                          </div>
-                          <button className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-md text-xs font-medium text-gray-700 hover:bg-emerald-50 hover:text-[#065f46] hover:border-[#065f46]/30 transition-colors whitespace-nowrap">
-                            + Nova
-                          </button>
-                          <button className="p-1.5 border border-gray-200 rounded-md text-gray-500 hover:bg-gray-50 shrink-0">
-                            <MoreHorizontal className="w-4 h-4" />
-                          </button>
+                        <div className="text-5xl font-bold text-white tracking-tight mb-2">
+                          {dashboardData.trees.value}
+                        </div>
+                        <div className="w-full bg-[#044e3a] h-1.5 rounded-full overflow-hidden mt-4">
+                          <div className="bg-emerald-400 h-full w-[75%] rounded-full"></div>
                         </div>
                       </div>
+                    </div>
+                  </div>
 
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                          <thead>
-                            <tr className="border-b border-gray-100 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
-                              <th className="pb-3 px-2 font-medium w-8">
+                  <div className="dash-chart-card bg-white border border-gray-200 rounded-xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] mt-6">
+                    <div className="flex justify-between items-start md:items-center mb-5 flex-col md:flex-row gap-4 md:gap-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                          HISTÓRICO RECENTE
+                        </h3>
+                        <div className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px] relative group cursor-help">
+                          ?
+                          <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] bg-gray-800 text-white text-[10px] p-2 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-lg z-20 font-normal normal-case tracking-normal text-left">
+                            Últimas transações registradas.
+                            <div className="absolute top-full left-1.5 border-4 border-transparent border-t-gray-800"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                        <div className="relative flex-1 md:flex-none">
+                          <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                          <input
+                            type="text"
+                            placeholder="Buscar transações..."
+                            className="w-full md:w-48 bg-[#F9FAFB] border border-gray-200 rounded-md py-1.5 pl-8 pr-3 text-xs outline-none focus:border-[#065f46] focus:ring-1 focus:ring-[#065f46] focus:bg-white transition-colors"
+                          />
+                        </div>
+                        <button className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-md text-xs font-medium text-gray-700 hover:bg-emerald-50 hover:text-[#065f46] hover:border-[#065f46]/30 transition-colors whitespace-nowrap">
+                          + Nova
+                        </button>
+                        <button className="p-1.5 border border-gray-200 rounded-md text-gray-500 hover:bg-gray-50 shrink-0">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left">
+                        <thead>
+                          <tr className="border-b border-gray-100 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                            <th className="pb-3 px-2 font-medium w-8">
+                              <input
+                                type="checkbox"
+                                className="rounded border-gray-300 text-[#065f46] focus:ring-[#065f46]"
+                              />
+                            </th>
+                            <th className="pb-3 px-2 font-medium">ID:</th>
+                            <th className="pb-3 px-2 font-medium">PRAÇA:</th>
+                            <th className="pb-3 px-2 font-medium">ESTADO:</th>
+                            <th className="pb-3 px-2 font-medium">STATUS:</th>
+
+                            <th className="pb-3 px-2 font-medium text-right">
+                              AÇÕES
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {dashboardData.history.map((row, idx) => (
+                            <tr
+                              key={idx}
+                              className="table-row-anim border-b border-gray-50 hover:bg-gray-50/50 transition-colors text-sm text-gray-600"
+                            >
+                              <td className="py-3 px-2">
                                 <input
                                   type="checkbox"
                                   className="rounded border-gray-300 text-[#065f46] focus:ring-[#065f46]"
                                 />
-                              </th>
-                              <th className="pb-3 px-2 font-medium">ID:</th>
-                              <th className="pb-3 px-2 font-medium">PRAÇA:</th>
-                              <th className="pb-3 px-2 font-medium">ESTADO:</th>
-                              <th className="pb-3 px-2 font-medium">STATUS:</th>
+                              </td>
+                              <td className="py-3 px-2 font-medium text-gray-400">
+                                {row.id}
+                              </td>
+                              <td className="py-3 px-2 text-gray-900 font-medium">
+                                {row.praca}
+                              </td>
+                              <td className="py-3 px-2 text-gray-500">
+                                {row.estado}
+                              </td>
+                              <td className="py-3 px-2">
+                                {row.status === "Success" && (
+                                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#065f46] bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#065f46]"></span>{" "}
+                                    Sucesso
+                                  </span>
+                                )}
+                                {row.status === "Pending" && (
+                                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>{" "}
+                                    Pendente
+                                  </span>
+                                )}
+                                {row.status === "Refunded" && (
+                                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>{" "}
+                                    Reembolsado
+                                  </span>
+                                )}
+                              </td>
 
-                              <th className="pb-3 px-2 font-medium text-right">
-                                AÇÕES
-                              </th>
+                              <td className="py-3 px-2 text-right">
+                                <button className="p-1 border border-gray-200 rounded text-gray-400 hover:text-[#065f46] hover:border-[#065f46]/30 hover:bg-emerald-50 transition-colors">
+                                  <MoreHorizontal className="w-4 h-4" />
+                                </button>
+                              </td>
                             </tr>
-                          </thead>
-                          <tbody>
-                            {dashboardData.history.map((row, idx) => (
-                              <tr
-                                key={idx}
-                                className="table-row-anim border-b border-gray-50 hover:bg-gray-50/50 transition-colors text-sm text-gray-600"
-                              >
-                                <td className="py-3 px-2">
-                                  <input
-                                    type="checkbox"
-                                    className="rounded border-gray-300 text-[#065f46] focus:ring-[#065f46]"
-                                  />
-                                </td>
-                                <td className="py-3 px-2 font-medium text-gray-400">
-                                  {row.id}
-                                </td>
-                                <td className="py-3 px-2 text-gray-900 font-medium">
-                                  {row.praca}
-                                </td>
-                                <td className="py-3 px-2 text-gray-500">
-                                  {row.estado}
-                                </td>
-                                <td className="py-3 px-2">
-                                  {row.status === "Success" && (
-                                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#065f46] bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-[#065f46]"></span>{" "}
-                                      Sucesso
-                                    </span>
-                                  )}
-                                  {row.status === "Pending" && (
-                                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>{" "}
-                                      Pendente
-                                    </span>
-                                  )}
-                                  {row.status === "Refunded" && (
-                                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>{" "}
-                                      Reembolsado
-                                    </span>
-                                  )}
-                                </td>
-
-                                <td className="py-3 px-2 text-right">
-                                  <button className="p-1 border border-gray-200 rounded text-gray-400 hover:text-[#065f46] hover:border-[#065f46]/30 hover:bg-emerald-50 transition-colors">
-                                    <MoreHorizontal className="w-4 h-4" />
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
-                  </>
-                </div>
-            )}
+                  </div>
+                </>
               </div>
+            )}
+          </div>
         </div>
-        </div>
-
-        <ModalExportar
-          isOpen={isExportModalOpen}
-          onClose={() => setIsExportModalOpen(false)}
-          data={dashboardData}
-          userName={displayUserName}
-        />
       </div>
-      );
+
+      <ModalExportar
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        data={dashboardData}
+        userName={displayUserName}
+      />
+    </div>
+  );
 }
