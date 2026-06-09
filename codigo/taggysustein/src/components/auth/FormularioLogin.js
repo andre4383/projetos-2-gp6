@@ -144,18 +144,19 @@ export default function FormularioLogin() {
 
       console.log("Status da resposta do backend:", response.status);
 
-      if (response.ok) {
-        const userId = await response.text();
+      if (response.ok) { //status ok
+        const userData = await response.json(); 
+        const userId = userData.userId; // extraindo o ID do JSON retornado
         console.log("ID retornado pelo backend:", userId);
-        
+
         const namePart = email.split("@")[0];
         let formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-        
+
         localStorage.setItem("userName", formattedName);
-        localStorage.setItem("userId", userId.trim());
+        localStorage.setItem("userId", userId);
 
         try {
-          await fetch(`http://127.0.0.1:8080/api/calculos/b2b/usuario/${userId.trim()}?mes=2024-06`);
+          await fetch(`http://127.0.0.1:8080/api/calculos/b2b/usuario/${userId}?mes=2024-06`);
         } catch (calcError) {
           console.error("Erro ao carregar cálculos", calcError);
         }
