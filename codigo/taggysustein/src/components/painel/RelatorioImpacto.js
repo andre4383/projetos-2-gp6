@@ -24,21 +24,27 @@ export default function RelatorioImpacto({ userName }) {
   const [selectedMonth, setSelectedMonth] = useState("2026-03");
   const containerRef = useRef(null);
 
-  const isB2B = userName.toLowerCase().includes("helena");
 
   const fetchData = async (month) => {
     setLoading(true);
     setError(null);
     try {
       const storedId = localStorage.getItem("userId");
-      const userId = storedId
-        ? storedId
-        : userName.toLowerCase().includes("helena")
-          ? 2
-          : 1;
+      const userId = storedId ? storedId : 1;
+
+      let isB2BUser = false;
+      try {
+        const vehicleResponse = await fetch(`/api/v1/veiculo/usuario/${userId}`);
+        if (vehicleResponse.ok) {
+          const vehicles = await vehicleResponse.json();
+          isB2BUser = Array.isArray(vehicles) && vehicles.length > 1;
+        }
+      } catch (err) {
+        console.error("Erro ao verificar veículos para B2B", err);
+      }
 
       const response = await fetch(
-        `http://127.0.0.1:8080/api/calculos/b2b/usuario/${userId}?mes=${month}`,
+        `/api/calculos/b2b/usuario/${userId}?mes=${month}`,
       );
 
       if (!response.ok) {

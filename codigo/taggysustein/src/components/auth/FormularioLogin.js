@@ -132,7 +132,7 @@ export default function FormularioLogin() {
       console.log("Enviando requisição de login para o backend:", payload);
 
       const response = await fetch(
-        "http://127.0.0.1:8080/api/v1/usuario/login",
+        "/api/v1/usuario/login",
         {
           method: "POST",
           headers: {
@@ -156,16 +156,19 @@ export default function FormularioLogin() {
         localStorage.setItem("userId", userId);
 
         try {
-          await fetch(`http://127.0.0.1:8080/api/calculos/b2b/usuario/${userId}?mes=2024-06`);
+          await fetch(`/api/calculos/b2b/usuario/${userId}?mes=2024-06`);
         } catch (calcError) {
           console.error("Erro ao carregar cálculos", calcError);
         }
 
+        alert("Login com sucesso! Redirecionando para o painel...");
         router.push("/dashboard");
       } else {
+        alert("Falha no login. O backend retornou: " + response.status);
         setErro("E-mail ou senha inválidos.");
       }
     } catch (err) {
+      alert("Erro na requisição: " + err.message);
       console.error("Backend indisponível.", err);
       setErro("Não foi possível conectar ao servidor. Tente novamente mais tarde.");
     } finally {
@@ -302,7 +305,8 @@ export default function FormularioLogin() {
             </div>
 
             <button
-              type="submit"
+              type="button"
+              onClick={handleLogin}
               disabled={loading}
               className="login-animate-item w-full bg-black hover:bg-gray-900 text-white py-3 rounded-full font-medium transition-colors mt-4 disabled:opacity-70 disabled:cursor-not-allowed text-sm font-semibold tracking-wide cursor-pointer"
             >

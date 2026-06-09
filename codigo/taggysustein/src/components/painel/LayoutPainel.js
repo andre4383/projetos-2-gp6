@@ -60,21 +60,29 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
     setIsUserMenuOpen(false);
   };
 
-  const isB2B = userName.toLowerCase().includes("helena");
+  const [isB2B, setIsB2B] = useState(false);
 
   const fetchBackendData = async (month) => {
     if (!userName) return;
     setLoadingBackend(true);
     try {
       const storedId = localStorage.getItem("userId");
-      const userId = storedId
-        ? storedId
-        : userName.toLowerCase().includes("helena")
-          ? 2
-          : 1;
+      const userId = storedId ? storedId : 1;
+
+      let isB2BUser = false;
+      try {
+        const vehicleResponse = await fetch(`/api/v1/veiculo/usuario/${userId}`);
+        if (vehicleResponse.ok) {
+          const vehicles = await vehicleResponse.json();
+          isB2BUser = Array.isArray(vehicles) && vehicles.length > 1;
+          setIsB2B(isB2BUser);
+        }
+      } catch (err) {
+        console.error("Erro ao verificar veículos para B2B", err);
+      }
 
       const response = await fetch(
-        `http://127.0.0.1:8080/api/calculos/b2b/usuario/${userId}?mes=${month}`,
+        `/api/calculos/b2b/usuario/${userId}?mes=${month}`,
       );
 
       if (!response.ok) {
@@ -238,117 +246,25 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
       trendDesc: "mês passado",
     },
     emissionsTotal: `${co2Str} CO₂`,
-    impactChart: isB2B
-      ? [
-        60,
-        75,
-        50,
-        80,
-        95,
-        60,
-        85,
-        70,
-        95,
-        80,
-        70,
-        Math.min(100, Math.max(10, totalCo2Evitados * 8)),
-      ]
-      : [
-        30,
-        45,
-        25,
-        60,
-        85,
-        40,
-        75,
-        30,
-        90,
-        50,
-        40,
-        Math.min(100, Math.max(10, totalCo2Evitados * 15)),
-      ],
+    impactChart: [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      Math.min(100, Math.max(0, totalCo2Evitados * 8))
+    ],
     economyTotal: economiaStr,
-    discountChart: isB2B
-      ? [
-        80,
-        60,
-        90,
-        70,
-        95,
-        60,
-        85,
-        100,
-        75,
-        90,
-        Math.min(100, Math.max(10, totalEconomiaFinanceira / 5)),
-      ]
-      : [
-        60,
-        40,
-        70,
-        50,
-        80,
-        40,
-        65,
-        90,
-        55,
-        75,
-        Math.min(100, Math.max(10, totalEconomiaFinanceira * 2)),
-      ],
-    history: isB2B
-      ? [
-        {
-          id: "#05001",
-          praca: "Frota Principal - Boa Viagem",
-          estado: "Pernambuco",
-          status: "Success",
-          ec: `R$ ${(totalEconomiaFinanceira * 0.4).toFixed(2).replace(".", ",")}`,
-        },
-        {
-          id: "#05002",
-          praca: "Frota Secundária - Igarassu",
-          estado: "Pernambuco",
-          status: "Success",
-          ec: `R$ ${(totalEconomiaFinanceira * 0.3).toFixed(2).replace(".", ",")}`,
-        },
-        {
-          id: "#05003",
-          praca: "Frota Principal - Paulista",
-          estado: "Pernambuco",
-          status: "Pending",
-          ec: `R$ ${(totalEconomiaFinanceira * 0.2).toFixed(2).replace(".", ",")}`,
-        },
-        {
-          id: "#05004",
-          praca: "Frota Extra - Cabo de Sto. Agostinho",
-          estado: "Pernambuco",
-          status: "Refunded",
-          ec: `R$ ${(totalEconomiaFinanceira * 0.1).toFixed(2).replace(".", ",")}`,
-        },
-      ]
-      : [
-        {
-          id: "#04910",
-          praca: "Boa Viagem",
-          estado: "Pernambuco",
-          status: "Success",
-          ec: `R$ ${(totalEconomiaFinanceira * 0.5).toFixed(2).replace(".", ",")}`,
-        },
-        {
-          id: "#04911",
-          praca: "Igarassu",
-          estado: "Pernambuco",
-          status: "Success",
-          ec: `R$ ${(totalEconomiaFinanceira * 0.3).toFixed(2).replace(".", ",")}`,
-        },
-        {
-          id: "#04912",
-          praca: "Paulista",
-          estado: "Pernambuco",
-          status: "Pending",
-          ec: `R$ ${(totalEconomiaFinanceira * 0.2).toFixed(2).replace(".", ",")}`,
-        },
-      ],
+    discountChart: [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      Math.min(100, Math.max(0, totalEconomiaFinanceira / 5))
+    ],
+    history: backendData.map((calc, idx) => {
+      const totalEconomia = (calc.ganhos?.litrosCombustivelEvitados || 0) * 5.8 + ((calc.ganhos?.tempoGanhoSegundos || 0) / 3600) * 20;
+      return {
+        id: `#${(idx + 1).toString().padStart(5, '0')}`,
+        praca: calc.veiculoInfo || "Veículo Registrado",
+        estado: "Pernambuco",
+        status: "Success",
+        ec: `R$ ${totalEconomia.toFixed(2).replace(".", ",")}`,
+      };
+    })
   };
 
   return (

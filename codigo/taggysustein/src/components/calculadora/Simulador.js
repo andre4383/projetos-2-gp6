@@ -86,7 +86,7 @@ export default function Simulador() {
         fuelType: fuelType,
       };
 
-      const response = await fetch("http://127.0.0.1:8080/api/v1/calculo/b2c", {
+      const response = await fetch("/api/v1/calculo/b2c", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
