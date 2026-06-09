@@ -19,6 +19,7 @@ import {
   CheckCircle2,
   LogOut,
   Trees,
+  Menu,
 } from "lucide-react";
 import { Inter } from "next/font/google";
 import gsap from "gsap";
@@ -35,6 +36,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
   const [userName, setUserName] = useState("");
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const containerRef = useRef(null);
 
   const [backendData, setBackendData] = useState([]);
@@ -43,7 +45,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
 
   const displayUserName = userName.toLowerCase().startsWith("usuario")
     ? userName.substring(7).charAt(0).toUpperCase() +
-      userName.substring(7).slice(1)
+    userName.substring(7).slice(1)
     : userName;
 
   useEffect(() => {
@@ -100,6 +102,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
         opacity: 0,
         duration: 0.9,
         ease: "power4.out",
+        clearProps: "transform",
       });
 
       gsap.from(".dash-header", {
@@ -209,6 +212,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
         trend: isB2B ? "+4,5 kg" : "+1,2 kg",
         trendDesc: "mês passado",
         hasChart: true,
+        tooltip: "Total de emissões de CO₂ evitadas pelas suas ações.",
       },
       {
         title: "TEMPO ECONOMIZADO",
@@ -216,6 +220,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
         trend: isB2B ? "+12 min" : "+4 min",
         trendDesc: "mês passado",
         hasChart: true,
+        tooltip: "Tempo economizado em processos digitais.",
       },
       {
         title: "ECONOMIA DE PAPEL",
@@ -223,6 +228,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
         trend: isB2B ? "+66 g" : "+15 g",
         trendDesc: "mês passado",
         hasChart: false,
+        tooltip: "Papel economizado ao evitar impressões físicas.",
       },
     ],
     trees: {
@@ -234,124 +240,130 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
     emissionsTotal: `${co2Str} CO₂`,
     impactChart: isB2B
       ? [
-          60,
-          75,
-          50,
-          80,
-          95,
-          60,
-          85,
-          70,
-          95,
-          80,
-          70,
-          Math.min(100, Math.max(10, totalCo2Evitados * 8)),
-        ]
+        60,
+        75,
+        50,
+        80,
+        95,
+        60,
+        85,
+        70,
+        95,
+        80,
+        70,
+        Math.min(100, Math.max(10, totalCo2Evitados * 8)),
+      ]
       : [
-          30,
-          45,
-          25,
-          60,
-          85,
-          40,
-          75,
-          30,
-          90,
-          50,
-          40,
-          Math.min(100, Math.max(10, totalCo2Evitados * 15)),
-        ],
+        30,
+        45,
+        25,
+        60,
+        85,
+        40,
+        75,
+        30,
+        90,
+        50,
+        40,
+        Math.min(100, Math.max(10, totalCo2Evitados * 15)),
+      ],
     economyTotal: economiaStr,
     discountChart: isB2B
       ? [
-          80,
-          60,
-          90,
-          70,
-          95,
-          60,
-          85,
-          100,
-          75,
-          90,
-          Math.min(100, Math.max(10, totalEconomiaFinanceira / 5)),
-        ]
+        80,
+        60,
+        90,
+        70,
+        95,
+        60,
+        85,
+        100,
+        75,
+        90,
+        Math.min(100, Math.max(10, totalEconomiaFinanceira / 5)),
+      ]
       : [
-          60,
-          40,
-          70,
-          50,
-          80,
-          40,
-          65,
-          90,
-          55,
-          75,
-          Math.min(100, Math.max(10, totalEconomiaFinanceira * 2)),
-        ],
+        60,
+        40,
+        70,
+        50,
+        80,
+        40,
+        65,
+        90,
+        55,
+        75,
+        Math.min(100, Math.max(10, totalEconomiaFinanceira * 2)),
+      ],
     history: isB2B
       ? [
-          {
-            id: "#05001",
-            praca: "Frota Principal - Boa Viagem",
-            estado: "Pernambuco",
-            status: "Success",
-            ec: `R$ ${(totalEconomiaFinanceira * 0.4).toFixed(2).replace(".", ",")}`,
-          },
-          {
-            id: "#05002",
-            praca: "Frota Secundária - Igarassu",
-            estado: "Pernambuco",
-            status: "Success",
-            ec: `R$ ${(totalEconomiaFinanceira * 0.3).toFixed(2).replace(".", ",")}`,
-          },
-          {
-            id: "#05003",
-            praca: "Frota Principal - Paulista",
-            estado: "Pernambuco",
-            status: "Pending",
-            ec: `R$ ${(totalEconomiaFinanceira * 0.2).toFixed(2).replace(".", ",")}`,
-          },
-          {
-            id: "#05004",
-            praca: "Frota Extra - Cabo de Sto. Agostinho",
-            estado: "Pernambuco",
-            status: "Refunded",
-            ec: `R$ ${(totalEconomiaFinanceira * 0.1).toFixed(2).replace(".", ",")}`,
-          },
-        ]
+        {
+          id: "#05001",
+          praca: "Frota Principal - Boa Viagem",
+          estado: "Pernambuco",
+          status: "Success",
+          ec: `R$ ${(totalEconomiaFinanceira * 0.4).toFixed(2).replace(".", ",")}`,
+        },
+        {
+          id: "#05002",
+          praca: "Frota Secundária - Igarassu",
+          estado: "Pernambuco",
+          status: "Success",
+          ec: `R$ ${(totalEconomiaFinanceira * 0.3).toFixed(2).replace(".", ",")}`,
+        },
+        {
+          id: "#05003",
+          praca: "Frota Principal - Paulista",
+          estado: "Pernambuco",
+          status: "Pending",
+          ec: `R$ ${(totalEconomiaFinanceira * 0.2).toFixed(2).replace(".", ",")}`,
+        },
+        {
+          id: "#05004",
+          praca: "Frota Extra - Cabo de Sto. Agostinho",
+          estado: "Pernambuco",
+          status: "Refunded",
+          ec: `R$ ${(totalEconomiaFinanceira * 0.1).toFixed(2).replace(".", ",")}`,
+        },
+      ]
       : [
-          {
-            id: "#04910",
-            praca: "Boa Viagem",
-            estado: "Pernambuco",
-            status: "Success",
-            ec: `R$ ${(totalEconomiaFinanceira * 0.5).toFixed(2).replace(".", ",")}`,
-          },
-          {
-            id: "#04911",
-            praca: "Igarassu",
-            estado: "Pernambuco",
-            status: "Success",
-            ec: `R$ ${(totalEconomiaFinanceira * 0.3).toFixed(2).replace(".", ",")}`,
-          },
-          {
-            id: "#04912",
-            praca: "Paulista",
-            estado: "Pernambuco",
-            status: "Pending",
-            ec: `R$ ${(totalEconomiaFinanceira * 0.2).toFixed(2).replace(".", ",")}`,
-          },
-        ],
+        {
+          id: "#04910",
+          praca: "Boa Viagem",
+          estado: "Pernambuco",
+          status: "Success",
+          ec: `R$ ${(totalEconomiaFinanceira * 0.5).toFixed(2).replace(".", ",")}`,
+        },
+        {
+          id: "#04911",
+          praca: "Igarassu",
+          estado: "Pernambuco",
+          status: "Success",
+          ec: `R$ ${(totalEconomiaFinanceira * 0.3).toFixed(2).replace(".", ",")}`,
+        },
+        {
+          id: "#04912",
+          praca: "Paulista",
+          estado: "Pernambuco",
+          status: "Pending",
+          ec: `R$ ${(totalEconomiaFinanceira * 0.2).toFixed(2).replace(".", ",")}`,
+        },
+      ],
   };
 
   return (
     <div
       ref={containerRef}
-      className={`flex h-screen w-full bg-[#F5F6F8] p-4 overflow-hidden ${inter.className}`}
+      className={`flex h-[100dvh] w-full bg-[#F5F6F8] md:p-4 overflow-hidden ${inter.className}`}
     >
-      <div className="flex w-full h-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        <nav className="dash-sidebar w-64 min-w-[16rem] bg-[#FAFBFC] border-r border-gray-200 flex flex-col pt-6 pb-4 px-4 z-10">
+      <div className="flex w-full h-full bg-white md:rounded-2xl shadow-sm md:border border-gray-200 overflow-hidden relative">
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/40 z-40 md:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+        <nav className={`dash-sidebar absolute md:relative z-50 md:z-10 h-full w-64 min-w-[16rem] bg-[#FAFBFC] border-r border-gray-200 flex flex-col pt-6 pb-4 px-4 transition-transform duration-300 ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
           <div
             onClick={() => setActiveTab("overview")}
             className="flex items-center gap-3 mb-8 px-2 cursor-pointer hover:opacity-80 transition-opacity"
@@ -377,55 +389,50 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
               <div className="space-y-0.5">
                 <button
                   onClick={() => setActiveTab("overview")}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === "overview"
-                      ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
-                      : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
-                  }`}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "overview"
+                    ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
+                    : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
+                    }`}
                 >
                   <Home className="w-4 h-4" />
                   Painel
                 </button>
                 <button
                   onClick={() => setActiveTab("products")}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === "products"
-                      ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
-                      : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
-                  }`}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "products"
+                    ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
+                    : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
+                    }`}
                 >
                   <CreditCard className="w-4 h-4" />
                   Meu Cartão
                 </button>
                 <button
                   onClick={() => setActiveTab("transactions")}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === "transactions"
-                      ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
-                      : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
-                  }`}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "transactions"
+                    ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
+                    : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
+                    }`}
                 >
                   <History className="w-4 h-4" />
                   Transações
                 </button>
                 <button
                   onClick={() => setActiveTab("reports")}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === "reports"
-                      ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
-                      : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
-                  }`}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "reports"
+                    ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
+                    : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
+                    }`}
                 >
                   <TrendingUp className="w-4 h-4" />
                   Análises
                 </button>
                 <button
                   onClick={() => setActiveTab("messages")}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === "messages"
-                      ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
-                      : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
-                  }`}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "messages"
+                    ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
+                    : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <FileText className="w-4 h-4" />
@@ -442,11 +449,10 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
               <div className="space-y-0.5">
                 <button
                   onClick={() => setActiveTab("vehicles")}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === "vehicles"
-                      ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
-                      : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
-                  }`}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "vehicles"
+                    ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
+                    : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
+                    }`}
                 >
                   <svg
                     className="w-4 h-4"
@@ -465,11 +471,10 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                 </button>
                 <button
                   onClick={() => setActiveTab("subscription")}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === "subscription"
-                      ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
-                      : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
-                  }`}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "subscription"
+                    ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
+                    : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
+                    }`}
                 >
                   <svg
                     className="w-4 h-4"
@@ -496,11 +501,10 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
               <div className="space-y-0.5">
                 <button
                   onClick={() => setActiveTab("settings")}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === "settings"
-                      ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
-                      : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
-                  }`}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "settings"
+                    ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
+                    : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
+                    }`}
                 >
                   <Settings className="w-4 h-4" />
                   Configurações
@@ -570,18 +574,26 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
           </div>
         </nav>
 
-        <div className="flex-1 flex flex-col h-full bg-white overflow-hidden">
-          <header className="dash-header h-16 px-8 flex items-center justify-between border-b border-gray-100 shrink-0">
-            <div className="flex items-center text-sm font-medium text-gray-400">
-              <span className="hover:text-gray-600 cursor-pointer transition-colors">
-                Painel
-              </span>
-              <span className="mx-2">{">"}</span>
-              <span className="text-[#065f46] font-semibold">Visão Geral</span>
+        <div className="flex-1 flex flex-col h-full bg-white overflow-hidden relative z-0">
+          <header className="dash-header h-16 px-4 md:px-8 flex items-center justify-between border-b border-gray-100 shrink-0">
+            <div className="flex items-center gap-3">
+              <button
+                className="md:hidden p-1.5 text-gray-500 hover:text-[#065f46]"
+                onClick={() => setIsMobileMenuOpen(true)}
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              <div className="hidden md:flex items-center text-sm font-medium text-gray-400">
+                <span className="hover:text-gray-600 cursor-pointer transition-colors">
+                  Painel
+                </span>
+                <span className="mx-2">{">"}</span>
+                <span className="text-[#065f46] font-semibold">Visão Geral</span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-6">
-              <div className="relative w-64">
+            <div className="flex items-center gap-3 md:gap-6">
+              <div className="relative w-40 md:w-64 hidden sm:block">
                 <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
@@ -616,30 +628,32 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
             </div>
           </header>
 
-          <div className="flex-1 overflow-y-auto p-8 scrollbar-hide">
+          <div className="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide">
             {activeTab === "vehicles" ? (
               <Veiculos userName={userName} />
             ) : activeTab === "reports" ? (
               <RelatorioImpacto userName={userName} />
             ) : (
               <div className="max-w-[1200px] mx-auto space-y-6">
-                <div className="dash-welcome flex justify-between items-end mb-8">
-                  <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+                <div className="dash-welcome flex flex-col lg:flex-row lg:justify-between lg:items-end gap-4 mb-8">
+                  <h1 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">
                     Bem-vindo de volta, {displayUserName}.
                   </h1>
-                  <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:border-[#065f46] hover:text-[#065f46] transition-colors">
+                  <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                    <button className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-md text-xs md:text-sm font-medium text-gray-700 hover:border-[#065f46] hover:text-[#065f46] transition-colors">
                       Diário <ChevronDown className="w-4 h-4" />
                     </button>
-                    <SeletorMes
-                      value={selectedMonth}
-                      onChange={setSelectedMonth}
-                    />
+                    <div className="flex-1 min-w-[120px]">
+                      <SeletorMes
+                        value={selectedMonth}
+                        onChange={setSelectedMonth}
+                      />
+                    </div>
                     <button
                       onClick={() => setIsExportModalOpen(true)}
-                      className="flex items-center gap-2 px-4 py-1.5 bg-[#065f46] hover:bg-[#044e3a] text-white rounded-md text-sm font-medium transition-colors shadow-sm ml-2"
+                      className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-1.5 bg-[#065f46] hover:bg-[#044e3a] text-white rounded-md text-xs md:text-sm font-medium transition-colors shadow-sm"
                     >
-                      <Download className="w-4 h-4" /> Exportar PDF
+                      <Download className="w-4 h-4" /> <span className="hidden sm:inline">Exportar PDF</span>
                     </button>
                   </div>
                 </div>
@@ -673,8 +687,12 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                           </div>
                         </div>
                         <div className="flex items-center justify-between mt-4">
-                          <div className="w-4 h-4 rounded-full bg-emerald-50 flex items-center justify-center text-[#065f46] text-[9px] font-bold">
+                          <div className="w-4 h-4 rounded-full bg-emerald-50 flex items-center justify-center text-[#065f46] text-[9px] font-bold relative group cursor-help">
                             ?
+                            <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] bg-gray-800 text-white text-[10px] p-2 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-lg z-20 font-normal normal-case tracking-normal text-left">
+                              {metric.tooltip}
+                              <div className="absolute top-full left-1.5 border-4 border-transparent border-t-gray-800"></div>
+                            </div>
                           </div>
                           <div className="flex items-center gap-1">
                             <span className="text-xs font-bold text-[#065f46]">
@@ -696,8 +714,12 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                           <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
                             TENDÊNCIA DE IMPACTO AMBIENTAL
                           </h3>
-                          <div className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px]">
+                          <div className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px] relative group cursor-help">
                             ?
+                            <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] bg-gray-800 text-white text-[10px] p-2 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-lg z-20 font-normal normal-case tracking-normal text-left">
+                              Histórico mensal de impacto e emissões.
+                              <div className="absolute top-full left-1.5 border-4 border-transparent border-t-gray-800"></div>
+                            </div>
                           </div>
                         </div>
                         <MoreHorizontal className="w-4 h-4 text-gray-400 cursor-pointer hover:text-[#065f46] transition-colors" />
@@ -726,218 +748,220 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                             </span>
                           </div>
                         </div>
-                        <div className="flex bg-gray-100 p-0.5 rounded-md">
-                          <button className="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-900 rounded-sm">
-                            Semanal
-                          </button>
-                          <button className="px-3 py-1 text-xs font-medium text-[#065f46] bg-white shadow-sm rounded-sm">
-                            Mensal
-                          </button>
-                          <button className="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-900 rounded-sm">
-                            Anual
-                          </button>
+                      </div>
+
+                        <div className="h-56 w-full relative flex items-end justify-between border-b border-gray-100 pb-2">
+                          <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-gray-400 font-medium pb-2">
+                            <span>40k</span>
+                            <span>30k</span>
+                            <span>20k</span>
+                            <span>10k</span>
+                            <span>0k</span>
+                          </div>
+
+                          <div className="absolute left-6 right-0 top-0 h-full flex flex-col justify-between pb-2 z-0">
+                            {[1, 2, 3, 4, 5].map((i) => (
+                              <div
+                                key={i}
+                                className="w-full border-t border-dashed border-gray-100"
+                              ></div>
+                            ))}
+                          </div>
+
+                          <div className="ml-8 w-full h-full flex items-end justify-between px-2 z-10">
+                            {dashboardData.impactChart.map((val, i) => (
+                              <div
+                                key={i}
+                                className="flex flex-col gap-[2px] w-4 items-center justify-end chart-bar-anim"
+                                style={{ height: `${val}%` }}
+                              >
+                                <div
+                                  className="w-full bg-emerald-100 rounded-[1px]"
+                                  style={{ flex: 0.4 }}
+                                ></div>
+                                <div
+                                  className="w-full bg-[#065f46] rounded-[1px]"
+                                  style={{ flex: 0.6 }}
+                                ></div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="ml-8 mt-3 flex justify-between px-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
+                          <span>JAN</span>
+                          <span>FEV</span>
+                          <span>MAR</span>
+                          <span>ABR</span>
+                          <span>MAI</span>
+                          <span>JUN</span>
+                          <span>JUL</span>
+                          <span>AGO</span>
+                          <span>SET</span>
+                          <span>OUT</span>
+                          <span>NOV</span>
+                          <span>DEZ</span>
                         </div>
                       </div>
 
-                      <div className="h-56 w-full relative flex items-end justify-between border-b border-gray-100 pb-2">
-                        <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-gray-400 font-medium pb-2">
-                          <span>40k</span>
-                          <span>30k</span>
-                          <span>20k</span>
-                          <span>10k</span>
-                          <span>0k</span>
-                        </div>
-
-                        <div className="absolute left-6 right-0 top-0 h-full flex flex-col justify-between pb-2 z-0">
-                          {[1, 2, 3, 4, 5].map((i) => (
-                            <div
-                              key={i}
-                              className="w-full border-t border-dashed border-gray-100"
-                            ></div>
-                          ))}
-                        </div>
-
-                        <div className="ml-8 w-full h-full flex items-end justify-between px-2 z-10">
-                          {dashboardData.impactChart.map((val, i) => (
-                            <div
-                              key={i}
-                              className="flex flex-col gap-[2px] w-4 items-center justify-end chart-bar-anim"
-                              style={{ height: `${val}%` }}
-                            >
-                              <div
-                                className="w-full bg-emerald-100 rounded-[1px]"
-                                style={{ flex: 0.4 }}
-                              ></div>
-                              <div
-                                className="w-full bg-[#065f46] rounded-[1px]"
-                                style={{ flex: 0.6 }}
-                              ></div>
+                      <div className="dash-metric-card bg-[#065f46] border border-[#044e3a] rounded-xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:bg-[#054d38] transition-colors h-full">
+                        <div className="flex justify-between items-start mb-4">
+                          <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
+                            <Trees
+                              className="w-6 h-6 text-white"
+                              strokeWidth={2}
+                            />
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm font-bold text-emerald-300">
+                              {dashboardData.trees.trend}
                             </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="ml-8 mt-3 flex justify-between px-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
-                        <span>JAN</span>
-                        <span>FEV</span>
-                        <span>MAR</span>
-                        <span>ABR</span>
-                        <span>MAI</span>
-                        <span>JUN</span>
-                        <span>JUL</span>
-                        <span>AGO</span>
-                        <span>SET</span>
-                        <span>OUT</span>
-                        <span>NOV</span>
-                        <span>DEZ</span>
-                      </div>
-                    </div>
-
-                    <div className="dash-metric-card bg-[#065f46] border border-[#044e3a] rounded-xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:bg-[#054d38] transition-colors h-full">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
-                          <Trees
-                            className="w-6 h-6 text-white"
-                            strokeWidth={2}
-                          />
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm font-bold text-emerald-300">
-                            {dashboardData.trees.trend}
+                            <div className="text-xs text-emerald-200">
+                              {dashboardData.trees.trendDesc}
+                            </div>
                           </div>
-                          <div className="text-xs text-emerald-200">
-                            {dashboardData.trees.trendDesc}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="text-[10px] font-semibold text-emerald-100 uppercase tracking-widest">
+                              {dashboardData.trees.title}
+                            </h3>
+                            <div className="w-4 h-4 rounded-full bg-white/10 flex items-center justify-center text-emerald-100 text-[10px] relative group cursor-help">
+                              ?
+                              <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] bg-gray-900 text-white text-[10px] p-2 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-lg z-20 font-normal normal-case tracking-normal text-left">
+                                {dashboardData.trees.tooltip}
+                                <div className="absolute top-full left-1.5 border-4 border-transparent border-t-gray-900"></div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-5xl font-bold text-white tracking-tight mb-2">
+                            {dashboardData.trees.value}
+                          </div>
+                          <div className="w-full bg-[#044e3a] h-1.5 rounded-full overflow-hidden mt-4">
+                            <div className="bg-emerald-400 h-full w-[75%] rounded-full"></div>
                           </div>
                         </div>
                       </div>
-                      <div>
-                        <h3 className="text-[10px] font-semibold text-emerald-100 uppercase tracking-widest mb-2">
-                          {dashboardData.trees.title}
-                        </h3>
-                        <div className="text-5xl font-bold text-white tracking-tight mb-2">
-                          {dashboardData.trees.value}
-                        </div>
-                        <div className="w-full bg-[#044e3a] h-1.5 rounded-full overflow-hidden mt-4">
-                          <div className="bg-emerald-400 h-full w-[75%] rounded-full"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="dash-chart-card bg-white border border-gray-200 rounded-xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] mt-6">
-                    <div className="flex justify-between items-center mb-5">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
-                          HISTÓRICO RECENTE
-                        </h3>
-                        <div className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px]">
-                          ?
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                          <input
-                            type="text"
-                            placeholder="Buscar transações..."
-                            className="w-48 bg-[#F9FAFB] border border-gray-200 rounded-md py-1.5 pl-8 pr-3 text-xs outline-none focus:border-[#065f46] focus:ring-1 focus:ring-[#065f46] focus:bg-white transition-colors"
-                          />
-                        </div>
-                        <button className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-md text-xs font-medium text-gray-700 hover:bg-emerald-50 hover:text-[#065f46] hover:border-[#065f46]/30 transition-colors">
-                          + Nova Transação
-                        </button>
-                        <button className="p-1.5 border border-gray-200 rounded-md text-gray-500 hover:bg-gray-50">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </button>
-                      </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left">
-                        <thead>
-                          <tr className="border-b border-gray-100 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
-                            <th className="pb-3 px-2 font-medium w-8">
-                              <input
-                                type="checkbox"
-                                className="rounded border-gray-300 text-[#065f46] focus:ring-[#065f46]"
-                              />
-                            </th>
-                            <th className="pb-3 px-2 font-medium">ID:</th>
-                            <th className="pb-3 px-2 font-medium">PRAÇA:</th>
-                            <th className="pb-3 px-2 font-medium">ESTADO:</th>
-                            <th className="pb-3 px-2 font-medium">STATUS:</th>
+                    <div className="dash-chart-card bg-white border border-gray-200 rounded-xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] mt-6">
+                      <div className="flex justify-between items-start md:items-center mb-5 flex-col md:flex-row gap-4 md:gap-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                            HISTÓRICO RECENTE
+                          </h3>
+                          <div className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px] relative group cursor-help">
+                            ?
+                            <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] bg-gray-800 text-white text-[10px] p-2 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-lg z-20 font-normal normal-case tracking-normal text-left">
+                              Últimas transações registradas.
+                              <div className="absolute top-full left-1.5 border-4 border-transparent border-t-gray-800"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                          <div className="relative flex-1 md:flex-none">
+                            <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                            <input
+                              type="text"
+                              placeholder="Buscar transações..."
+                              className="w-full md:w-48 bg-[#F9FAFB] border border-gray-200 rounded-md py-1.5 pl-8 pr-3 text-xs outline-none focus:border-[#065f46] focus:ring-1 focus:ring-[#065f46] focus:bg-white transition-colors"
+                            />
+                          </div>
+                          <button className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-md text-xs font-medium text-gray-700 hover:bg-emerald-50 hover:text-[#065f46] hover:border-[#065f46]/30 transition-colors whitespace-nowrap">
+                            + Nova
+                          </button>
+                          <button className="p-1.5 border border-gray-200 rounded-md text-gray-500 hover:bg-gray-50 shrink-0">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
 
-                            <th className="pb-3 px-2 font-medium text-right">
-                              AÇÕES
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {dashboardData.history.map((row, idx) => (
-                            <tr
-                              key={idx}
-                              className="table-row-anim border-b border-gray-50 hover:bg-gray-50/50 transition-colors text-sm text-gray-600"
-                            >
-                              <td className="py-3 px-2">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                          <thead>
+                            <tr className="border-b border-gray-100 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                              <th className="pb-3 px-2 font-medium w-8">
                                 <input
                                   type="checkbox"
                                   className="rounded border-gray-300 text-[#065f46] focus:ring-[#065f46]"
                                 />
-                              </td>
-                              <td className="py-3 px-2 font-medium text-gray-400">
-                                {row.id}
-                              </td>
-                              <td className="py-3 px-2 text-gray-900 font-medium">
-                                {row.praca}
-                              </td>
-                              <td className="py-3 px-2 text-gray-500">
-                                {row.estado}
-                              </td>
-                              <td className="py-3 px-2">
-                                {row.status === "Success" && (
-                                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#065f46] bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-[#065f46]"></span>{" "}
-                                    Sucesso
-                                  </span>
-                                )}
-                                {row.status === "Pending" && (
-                                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>{" "}
-                                    Pendente
-                                  </span>
-                                )}
-                                {row.status === "Refunded" && (
-                                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>{" "}
-                                    Reembolsado
-                                  </span>
-                                )}
-                              </td>
+                              </th>
+                              <th className="pb-3 px-2 font-medium">ID:</th>
+                              <th className="pb-3 px-2 font-medium">PRAÇA:</th>
+                              <th className="pb-3 px-2 font-medium">ESTADO:</th>
+                              <th className="pb-3 px-2 font-medium">STATUS:</th>
 
-                              <td className="py-3 px-2 text-right">
-                                <button className="p-1 border border-gray-200 rounded text-gray-400 hover:text-[#065f46] hover:border-[#065f46]/30 hover:bg-emerald-50 transition-colors">
-                                  <MoreHorizontal className="w-4 h-4" />
-                                </button>
-                              </td>
+                              <th className="pb-3 px-2 font-medium text-right">
+                                AÇÕES
+                              </th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+                          </thead>
+                          <tbody>
+                            {dashboardData.history.map((row, idx) => (
+                              <tr
+                                key={idx}
+                                className="table-row-anim border-b border-gray-50 hover:bg-gray-50/50 transition-colors text-sm text-gray-600"
+                              >
+                                <td className="py-3 px-2">
+                                  <input
+                                    type="checkbox"
+                                    className="rounded border-gray-300 text-[#065f46] focus:ring-[#065f46]"
+                                  />
+                                </td>
+                                <td className="py-3 px-2 font-medium text-gray-400">
+                                  {row.id}
+                                </td>
+                                <td className="py-3 px-2 text-gray-900 font-medium">
+                                  {row.praca}
+                                </td>
+                                <td className="py-3 px-2 text-gray-500">
+                                  {row.estado}
+                                </td>
+                                <td className="py-3 px-2">
+                                  {row.status === "Success" && (
+                                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#065f46] bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-[#065f46]"></span>{" "}
+                                      Sucesso
+                                    </span>
+                                  )}
+                                  {row.status === "Pending" && (
+                                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>{" "}
+                                      Pendente
+                                    </span>
+                                  )}
+                                  {row.status === "Refunded" && (
+                                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>{" "}
+                                      Reembolsado
+                                    </span>
+                                  )}
+                                </td>
 
-      <ModalExportar
-        isOpen={isExportModalOpen}
-        onClose={() => setIsExportModalOpen(false)}
-        data={dashboardData}
-        userName={displayUserName}
-      />
-    </div>
-  );
+                                <td className="py-3 px-2 text-right">
+                                  <button className="p-1 border border-gray-200 rounded text-gray-400 hover:text-[#065f46] hover:border-[#065f46]/30 hover:bg-emerald-50 transition-colors">
+                                    <MoreHorizontal className="w-4 h-4" />
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </>
+                </div>
+            )}
+              </div>
+        </div>
+        </div>
+
+        <ModalExportar
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          data={dashboardData}
+          userName={displayUserName}
+        />
+      </div>
+      );
 }
