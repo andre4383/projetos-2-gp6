@@ -14,9 +14,9 @@ import {
 } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import MonthPicker from "./MonthPicker";
+import SeletorMes from "./SeletorMes";
 
-export default function AnaliseImpacto({ userName }) {
+export default function RelatorioImpacto({ userName }) {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
@@ -107,7 +107,7 @@ export default function AnaliseImpacto({ userName }) {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <MonthPicker value={selectedMonth} onChange={setSelectedMonth} />
+          <SeletorMes value={selectedMonth} onChange={setSelectedMonth} />
         </div>
       </div>
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-export default function MonthPicker({ value, onChange }) {
+export default function SeletorMes({ value, onChange }) {
   const [open, setOpen] = useState(false);
   const [currentYear, setCurrentYear] = useState(
     value ? parseInt(value.split("-")[0]) : new Date().getFullYear()

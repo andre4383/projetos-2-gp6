@@ -12,9 +12,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import SearchableSelect from "./SearchableSelect";
+import SearchableSelect from "@/components/ui/SearchableSelect";
 
-export default function CalculadoraLanding() {
+export default function Simulador() {
   const containerRef = useRef(null);
   const [pedagiosPorMes, setPedagiosPorMes] = useState("0");
   const [estacionamentosPorMes, setEstacionamentosPorMes] = useState("0");

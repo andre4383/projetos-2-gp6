@@ -1,4 +1,4 @@
-import Painel from "@/components/Painel";
+import LayoutPainel from "@/components/painel/LayoutPainel";
 
 export const metadata = {
   title: "Painel - TaggySustain",
@@ -7,8 +7,6 @@ export const metadata = {
 
 export default function DashboardPage() {
   return (
-    <main className="min-h-screen bg-[#F4F7F5]">
-      <Painel />
-    </main>
+      <LayoutPainel />
   );
 }

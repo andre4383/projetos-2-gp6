@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 import { X, FileText, Download, Calendar, CheckCircle2 } from "lucide-react";
 
-export default function ModalExportarRelatorio({ isOpen, onClose, data, userName }) {
+export default function ModalExportar({ isOpen, onClose, data, userName }) {
   if (!isOpen) return null;
 
   const handleExport = () => {

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import SearchableSelect from "./SearchableSelect";
+import SearchableSelect from "../ui/SearchableSelect";
 
 export default function Veiculos({ userName }) {
   const [loading, setLoading] = useState(true);

@@ -24,13 +24,13 @@ import { Inter } from "next/font/google";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import Veiculos from "./Veiculos";
-import ModalExportarRelatorio from "./ModalExportarRelatorio";
-import AnaliseImpacto from "./AnaliseImpacto";
-import MonthPicker from "./MonthPicker";
+import ModalExportar from "./ModalExportar";
+import RelatorioImpacto from "./RelatorioImpacto";
+import SeletorMes from "./SeletorMes";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Painel({ onOpenExportModal, onOpenCalculator }) {
+export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
   const [activeTab, setActiveTab] = useState("overview");
   const [userName, setUserName] = useState("");
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -620,7 +620,7 @@ export default function Painel({ onOpenExportModal, onOpenCalculator }) {
             {activeTab === "vehicles" ? (
               <Veiculos userName={userName} />
             ) : activeTab === "reports" ? (
-              <AnaliseImpacto userName={userName} />
+              <RelatorioImpacto userName={userName} />
             ) : (
               <div className="max-w-[1200px] mx-auto space-y-6">
                 <div className="dash-welcome flex justify-between items-end mb-8">
@@ -631,7 +631,7 @@ export default function Painel({ onOpenExportModal, onOpenCalculator }) {
                     <button className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:border-[#065f46] hover:text-[#065f46] transition-colors">
                       Diário <ChevronDown className="w-4 h-4" />
                     </button>
-                    <MonthPicker
+                    <SeletorMes
                       value={selectedMonth}
                       onChange={setSelectedMonth}
                     />
@@ -932,7 +932,7 @@ export default function Painel({ onOpenExportModal, onOpenCalculator }) {
         </div>
       </div>
 
-      <ModalExportarRelatorio
+      <ModalExportar
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         data={dashboardData}

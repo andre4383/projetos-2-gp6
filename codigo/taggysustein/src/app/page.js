@@ -2,7 +2,7 @@
 import React, { useRef } from "react";
 import Link from "next/link";
 import { Leaf, ArrowRight } from "lucide-react";
-import CalculadoraLanding from "@/components/CalculadoraLanding";
+import Simulador from "@/components/calculadora/Simulador";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -214,7 +214,7 @@ export default function Home() {
           <div className="hidden lg:block text-center mb-0">
              {/* Removido o cabeçalho gigante antigo pois a própria calculadora já tem seu título agora */}
           </div>
-          <CalculadoraLanding />
+          <Simulador />
         </div>
       </section>
 
