@@ -73,7 +73,7 @@ export default function ModalExportar({ isOpen, onClose, data, userName }) {
               <button className="w-full flex items-center justify-between p-3 border border-gray-200 bg-white hover:bg-gray-50 rounded-lg transition-colors">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Calendar className="w-4 h-4" />
-                  Março 2026
+                  Junho 2026
                 </div>
               </button>
             </div>
