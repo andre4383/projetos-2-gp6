@@ -164,7 +164,7 @@ export default function Veiculos({ userName }) {
                   : item.veiculoInfo || "Veículo",
                 year: unique.length === 1 && localV?.ano
                   ? parseInt(localV.ano)
-                  : item.mesReferencia ? parseInt(item.mesReferencia.split("-")[0]) : new Date().getFullYear(),
+                  : "—",
                 status: "Ativo",
                 type: "Sedan",
               }));
@@ -190,7 +190,7 @@ export default function Veiculos({ userName }) {
               id: 1,
               marca: localV.marca || "—",
               model: `${localV.marca} ${localV.modelo}`,
-              year: parseInt(localV.ano) || new Date().getFullYear(),
+              year: parseInt(localV.ano) || "—",
               status: "Ativo",
               type: "Sedan",
               fuelType: localV.fuelType,
