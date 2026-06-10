@@ -32,17 +32,6 @@ export default function RelatorioImpacto({ userName }) {
       const storedId = localStorage.getItem("userId");
       const userId = storedId ? storedId : 1;
 
-      let isB2BUser = false;
-      try {
-        const vehicleResponse = await fetch(`/api/v1/veiculo/usuario/${userId}`);
-        if (vehicleResponse.ok) {
-          const vehicles = await vehicleResponse.json();
-          isB2BUser = Array.isArray(vehicles) && vehicles.length > 1;
-        }
-      } catch (err) {
-        console.error("Erro ao verificar veículos para B2B", err);
-      }
-
       const response = await fetch(
         `/api/calculos/b2b/usuario/${userId}?mes=${month}`,
       );
@@ -312,15 +301,6 @@ export default function RelatorioImpacto({ userName }) {
                           <span className="text-xs font-normal text-emerald-200">
                             kg
                           </span>
-                        </div>
-                      </div>
-
-                      <div className="gain-metric bg-white/10 rounded-xl p-3 border border-white/10 backdrop-blur-sm">
-                        <div className="text-[10px] text-emerald-100 uppercase tracking-wider mb-1 flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> Tempo Ganho
-                        </div>
-                        <div className="text-xl font-bold text-white">
-                          {formatTime(item.ganhos.tempoGanhoSegundos)}
                         </div>
                       </div>
 

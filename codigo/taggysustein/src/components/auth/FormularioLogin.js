@@ -18,6 +18,14 @@ export default function FormularioLogin() {
   const [loading, setLoading] = useState(false);
   const [routeIndex, setRouteIndex] = useState(0);
 
+  // Pré-preenche com credenciais vindas da calculadora
+  useEffect(() => {
+    const pendingEmail = localStorage.getItem("pendingEmail");
+    const pendingSenha = localStorage.getItem("pendingSenha");
+    if (pendingEmail) setEmail(pendingEmail);
+    if (pendingSenha) setSenha(pendingSenha);
+  }, []);
+
   const routes = [
     {
       origin: "São Paulo",
@@ -149,11 +157,20 @@ export default function FormularioLogin() {
         const userId = userData.userId; // extraindo o ID do JSON retornado
         console.log("ID retornado pelo backend:", userId);
 
+        // Usa o nome completo do cadastro (calculadora) se disponível
+        const pendingNome = localStorage.getItem("pendingNome");
         const namePart = email.split("@")[0];
-        let formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+        const formattedName = pendingNome
+          ? pendingNome
+          : namePart.charAt(0).toUpperCase() + namePart.slice(1);
 
         localStorage.setItem("userName", formattedName);
         localStorage.setItem("userId", userId);
+
+        // Limpa credenciais temporárias da calculadora
+        localStorage.removeItem("pendingEmail");
+        localStorage.removeItem("pendingSenha");
+        localStorage.removeItem("pendingNome");
 
         try {
           await fetch(`/api/calculos/b2b/usuario/${userId}?mes=2024-06`);
@@ -161,7 +178,6 @@ export default function FormularioLogin() {
           console.error("Erro ao carregar cálculos", calcError);
         }
 
-        alert("Login com sucesso! Redirecionando para o painel...");
         router.push("/dashboard");
       } else {
         alert("Falha no login. O backend retornou: " + response.status);

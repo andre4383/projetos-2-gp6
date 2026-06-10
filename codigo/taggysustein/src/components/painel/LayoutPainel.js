@@ -70,18 +70,6 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
       const storedId = localStorage.getItem("userId");
       const userId = storedId ? storedId : 1;
 
-      let isB2BUser = false;
-      try {
-        const vehicleResponse = await fetch(`/api/v1/veiculo/usuario/${userId}`);
-        if (vehicleResponse.ok) {
-          const vehicles = await vehicleResponse.json();
-          isB2BUser = Array.isArray(vehicles) && vehicles.length > 1;
-          setIsB2B(isB2BUser);
-        }
-      } catch (err) {
-        console.error("Erro ao verificar veículos para B2B", err);
-      }
-
       const response = await fetch(
         `/api/calculos/b2b/usuario/${userId}?mes=${month}`,
       );
@@ -91,7 +79,11 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
       }
 
       const result = await response.json();
-      setBackendData(Array.isArray(result) ? result : []);
+      const dataArray = Array.isArray(result) ? result : [];
+      setBackendData(dataArray);
+      // Inferir B2B se houver mais de 1 veículo nos resultados
+      const uniqueVehicles = new Set(dataArray.map((item) => item.veiculoInfo)).size;
+      setIsB2B(uniqueVehicles > 1);
     } catch (err) {
       console.error("API indisponível no dashboard.", err);
       setBackendData([]);
@@ -315,26 +307,6 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                   Painel
                 </button>
                 <button
-                  onClick={() => setActiveTab("products")}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "products"
-                    ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
-                    : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
-                    }`}
-                >
-                  <CreditCard className="w-4 h-4" />
-                  Meu Cartão
-                </button>
-                <button
-                  onClick={() => setActiveTab("transactions")}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "transactions"
-                    ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
-                    : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
-                    }`}
-                >
-                  <History className="w-4 h-4" />
-                  Transações
-                </button>
-                <button
                   onClick={() => setActiveTab("reports")}
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "reports"
                     ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
@@ -344,26 +316,6 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                   <TrendingUp className="w-4 h-4" />
                   Análises
                 </button>
-                <button
-                  onClick={() => setActiveTab("messages")}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "messages"
-                    ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
-                    : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
-                    }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <FileText className="w-4 h-4" />
-                    Relatórios
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <div className="px-2 mb-2 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
-                Gerenciamento
-              </div>
-              <div className="space-y-0.5">
                 <button
                   onClick={() => setActiveTab("vehicles")}
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "vehicles"
@@ -386,48 +338,9 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                   </svg>
                   Veículos
                 </button>
-                <button
-                  onClick={() => setActiveTab("subscription")}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "subscription"
-                    ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
-                    : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
-                    }`}
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                    />
-                  </svg>
-                  Assinatura
-                </button>
               </div>
             </div>
 
-            <div>
-              <div className="px-2 mb-2 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
-                Configurações
-              </div>
-              <div className="space-y-0.5">
-                <button
-                  onClick={() => setActiveTab("settings")}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${activeTab === "settings"
-                    ? "bg-white shadow-sm border border-gray-200/60 text-[#065f46] font-semibold"
-                    : "text-gray-500 hover:bg-emerald-50 hover:text-[#065f46] font-medium"
-                    }`}
-                >
-                  <Settings className="w-4 h-4" />
-                  Configurações
-                </button>
-              </div>
-            </div>
           </div>
 
           <div className="relative mt-auto">
@@ -558,7 +471,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                   </h1>
                   <div className="flex flex-wrap items-center gap-2 md:gap-3">
                     <button className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-md text-xs md:text-sm font-medium text-gray-700 hover:border-[#065f46] hover:text-[#065f46] transition-colors">
-                      Diário <ChevronDown className="w-4 h-4" />
+                      Mensal <ChevronDown className="w-4 h-4" />
                     </button>
                     <div className="flex-1 min-w-[120px]">
                       <SeletorMes

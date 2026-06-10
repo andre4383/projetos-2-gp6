@@ -21,6 +21,7 @@ export default function Simulador() {
   const [fuelType, setFuelType] = useState("GASOLINA");
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
 
   // FIPE
   const [marcas, setMarcas] = useState([]);
@@ -43,8 +44,11 @@ export default function Simulador() {
   const router = useRouter();
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSenhaModalOpen, setIsSenhaModalOpen] = useState(false);
+  const [senhaConfirmacao, setSenhaConfirmacao] = useState("");
 
-  const handleCalcular = async () => {
+  // Abre o modal de senha após validar o formulário
+  const handleCalcular = () => {
     if (
       !nome ||
       !email ||
@@ -66,21 +70,84 @@ export default function Simulador() {
       setIsErrorModalOpen(true);
       return;
     }
+
+    // Formulário válido — abre modal de senha
+    setSenha("");
+    setSenhaConfirmacao("");
+    setIsSenhaModalOpen(true);
+  };
+
+  // Executa após o usuário confirmar a senha no modal
+  const handleConfirmarSenha = async () => {
+    if (!senha || senha.length < 6) {
+      setErrorMessage("A senha deve ter pelo menos 6 caracteres.");
+      setIsErrorModalOpen(true);
+      return;
+    }
+    if (senha !== senhaConfirmacao) {
+      setErrorMessage("As senhas não conferem. Tente novamente.");
+      setIsErrorModalOpen(true);
+      return;
+    }
+
+    setIsSenhaModalOpen(false);
     setLoading(true);
     setError(null);
 
-    let anoCalculo = parseInt(anoNome.substring(0, 4)) || 2024;
-    if (anoNome.toLowerCase().includes("zero"))
-      anoCalculo = new Date().getFullYear();
+    const anoVeiculo = anoNome === "Zero km" ? new Date().getFullYear() : parseInt(anoNome);
+    const mesAtual = new Date().toISOString().slice(0, 7);
 
     try {
+      // 1. Registrar usuário como B2C no banco via /api/dev/seed
+      const seedPayload = {
+        email: email,
+        nome: nome,
+        idade: 25,
+        cpfCnpj: "00000000000",
+        cep: "00000-000",
+        numero: "0",
+        senha: senha,
+        veiculos: [
+          {
+            modelo: modeloNome,
+            ano: anoVeiculo,
+            marca: marcaNome,
+            fuelType: fuelType,
+            dadosCalculo: [
+              {
+                mesReferencia: mesAtual,
+                qtdPassagensEstacionamento: parseInt(estacionamentosPorMes) || 0,
+                qtdPassagensPedagio: parseInt(pedagiosPorMes) || 0,
+              },
+            ],
+          },
+        ],
+      };
+
+      try {
+        await fetch("/api/dev/seed", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(seedPayload),
+        });
+        // Salva dados do veículo para exibição na página de veículos
+        localStorage.setItem("userVehicle", JSON.stringify({
+          marca: marcaNome,
+          modelo: modeloNome,
+          ano: String(anoVeiculo),
+          fuelType: fuelType,
+        }));
+      } catch (seedErr) {
+        console.warn("Aviso: não foi possível registrar usuário no banco.", seedErr);
+      }
+
+      // 2. Calcular impacto simplificado (B2C)
       const payload = {
         nomeCompleto: nome,
         email: email,
         marcaVeiculo: marcaNome,
         modeloVeiculo: modeloNome,
-        anoVeiculo:
-          anoNome === "Zero km" ? new Date().getFullYear() : parseInt(anoNome),
+        anoVeiculo: String(anoVeiculo),           // DTO: private String anoVeiculo
         totalPassagensPedagio: parseInt(pedagiosPorMes) || 0,
         totalPassagensEstacionamento: parseInt(estacionamentosPorMes) || 0,
         fuelType: fuelType,
@@ -99,7 +166,7 @@ export default function Simulador() {
           if (jsonError.message || jsonError.error) {
             errorText = jsonError.message || jsonError.error;
           }
-        } catch (e) {}
+        } catch (e) { }
         throw new Error(`Erro ${response.status}: ${errorText}`);
       }
 
@@ -115,16 +182,17 @@ export default function Simulador() {
         pedagiosPorMes,
       };
 
-      localStorage.setItem(
-        "taggySustainResultado",
-        JSON.stringify(resultadoCompleto),
-      );
+      // 3. Salvar resultado e credenciais no localStorage
+      localStorage.setItem("taggySustainResultado", JSON.stringify(resultadoCompleto));
+      localStorage.setItem("pendingEmail", email);
+      localStorage.setItem("pendingSenha", senha);
+
       router.push("/resultado");
     } catch (err) {
       console.error(err);
       if (err.name === "TypeError" && err.message.includes("fetch")) {
         setErrorMessage(
-          "O backend Java não está rodando na porta 8081 ou está bloqueando a conexão (CORS).",
+          "O backend Java não está rodando na porta 8080 ou está bloqueando a conexão (CORS).",
         );
       } else {
         setErrorMessage(err.message || "Falha de conexão com a API.");
@@ -134,6 +202,7 @@ export default function Simulador() {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     const fetchMarcas = async () => {
@@ -528,13 +597,13 @@ export default function Simulador() {
 
             <div className="h-px w-full bg-gray-200/60 my-6"></div>
 
-            {/* Bloco 2: Usuário */}
+            {/* Bloco 2: Dados de Contato */}
             <div>
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest mb-4">
-                Contato
+                Conta de Acesso
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+                <div className="md:col-span-2">
                   <label
                     htmlFor="nome"
                     className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
@@ -551,7 +620,7 @@ export default function Simulador() {
                     className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                   />
                 </div>
-                <div>
+                <div className="md:col-span-2">
                   <label
                     htmlFor="email"
                     className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
@@ -569,6 +638,9 @@ export default function Simulador() {
                   />
                 </div>
               </div>
+              <p className="mt-2 text-[11px] text-gray-400">
+                Você criará uma senha ao gerar o relatório para acessar seu painel.
+              </p>
             </div>
 
             <div className="h-px w-full bg-gray-200/60 my-6"></div>
@@ -642,6 +714,133 @@ export default function Simulador() {
           </div>
         </div>
       </div>
+
+      {/* Modal de Senha */}
+      {isSenhaModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setIsSenhaModalOpen(false)}
+          />
+
+          {/* Card do modal */}
+          <div className="relative z-10 w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
+            {/* Header */}
+            <div className="bg-[#0A3B24] px-6 pt-8 pb-6 text-white">
+              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold tracking-tight">Crie sua senha</h2>
+              <p className="text-emerald-200 text-sm mt-1">
+                Para acessar seu painel após ver o resultado.
+              </p>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-6 space-y-4">
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                  Senha
+                </label>
+                <input
+                  type="password"
+                  placeholder="Mínimo 6 caracteres"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                  autoFocus
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0A3B24]/30 focus:border-[#0A3B24] transition-all"
+                />
+                {/* Indicador de força */}
+                {senha.length > 0 && (
+                  <div className="mt-2 flex gap-1">
+                    {[1, 2, 3, 4].map((level) => {
+                      const strength = senha.length >= 10 && /[A-Z]/.test(senha) && /[0-9]/.test(senha) ? 4
+                        : senha.length >= 8 && /[0-9]/.test(senha) ? 3
+                          : senha.length >= 6 ? 2 : 1;
+                      return (
+                        <div
+                          key={level}
+                          className={`h-1 flex-1 rounded-full transition-all duration-300 ${level <= strength
+                              ? strength === 4 ? "bg-emerald-500"
+                                : strength === 3 ? "bg-emerald-400"
+                                  : strength === 2 ? "bg-amber-400"
+                                    : "bg-red-400"
+                              : "bg-gray-200"
+                            }`}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+                {senha.length > 0 && (
+                  <p className="text-[11px] mt-1 font-medium
+                    text-gray-500">
+                    {
+                      senha.length < 6 ? "⚠️ Muito curta"
+                        : senha.length >= 10 && /[A-Z]/.test(senha) && /[0-9]/.test(senha) ? "✅ Forte"
+                          : senha.length >= 8 && /[0-9]/.test(senha) ? "🟡 Boa"
+                            : "🟠 Razoável"
+                    }
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                  Confirmar Senha
+                </label>
+                <input
+                  type="password"
+                  placeholder="Repita a senha"
+                  value={senhaConfirmacao}
+                  onChange={(e) => setSenhaConfirmacao(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleConfirmarSenha()}
+                  className={`w-full bg-gray-50 border rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 transition-all ${senhaConfirmacao && senhaConfirmacao !== senha
+                      ? "border-red-300 focus:ring-red-200 focus:border-red-400"
+                      : senhaConfirmacao && senhaConfirmacao === senha
+                        ? "border-emerald-300 focus:ring-emerald-200 focus:border-emerald-400"
+                        : "border-gray-200 focus:ring-[#0A3B24]/30 focus:border-[#0A3B24]"
+                    }`}
+                />
+                {senhaConfirmacao && senhaConfirmacao !== senha && (
+                  <p className="text-[11px] text-red-500 mt-1 font-medium">❌ As senhas não conferem</p>
+                )}
+                {senhaConfirmacao && senhaConfirmacao === senha && (
+                  <p className="text-[11px] text-emerald-600 mt-1 font-medium">✅ Senhas conferem</p>
+                )}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 pb-6 flex gap-3">
+              <button
+                onClick={() => setIsSenhaModalOpen(false)}
+                className="flex-1 py-3 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmarSenha}
+                disabled={loading || !senha || !senhaConfirmacao}
+                className="flex-1 py-3 bg-[#0A3B24] text-white rounded-xl text-sm font-semibold hover:bg-[#062617] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                    </svg>
+                    Processando...
+                  </>
+                ) : "Confirmar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Dialog open={isErrorModalOpen} onOpenChange={setIsErrorModalOpen}>
         <DialogContent className="rounded-2xl">

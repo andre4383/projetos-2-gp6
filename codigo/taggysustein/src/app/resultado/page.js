@@ -223,15 +223,6 @@ export default function ResultadoPage() {
                       <span className="text-sm text-gray-500">g</span>
                     </p>
                   </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold mb-1">
-                      Tempo Ganho
-                    </p>
-                    <p className="text-2xl font-medium text-gray-900">
-                      {minutosEconomizados}{" "}
-                      <span className="text-sm text-gray-500">min</span>
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>

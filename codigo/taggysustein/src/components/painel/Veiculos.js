@@ -119,49 +119,91 @@ export default function Veiculos({ userName }) {
     }
   };
 
-  // Mock API call to fetch vehicles
-  const fetchVehicles = async (user) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        if (user.toLowerCase().includes("helena")) {
-          resolve({
-            role: "B2B",
-            vehicles: [
-              {
-                id: 1,
-                plate: "ABC-1234",
-                model: "Toyota Corolla",
-                year: 2026,
+  // Busca veículos reais do backend, com fallback no localStorage
+  const fetchVehicles = async () => {
+    try {
+      const storedId = localStorage.getItem("userId");
+      const userId = storedId ? storedId : 1;
+
+      // Marca salva pela calculadora (fonte mais confiável para B2C)
+      const storedVehicle = localStorage.getItem("userVehicle");
+      const localV = storedVehicle ? JSON.parse(storedVehicle) : null;
+
+      // Tenta os últimos 6 meses para encontrar dados
+      const months = [];
+      const now = new Date();
+      for (let i = 0; i < 6; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+      }
+
+      let apiVehicles = [];
+      for (const month of months) {
+        try {
+          const response = await fetch(`/api/calculos/b2b/usuario/${userId}?mes=${month}`);
+          if (response.ok) {
+            const result = await response.json();
+            if (Array.isArray(result) && result.length > 0) {
+              // Extrai veículos únicos pelo veiculoInfo
+              const seen = new Set();
+              const unique = result.filter((item) => {
+                if (seen.has(item.veiculoInfo)) return false;
+                seen.add(item.veiculoInfo);
+                return true;
+              });
+
+              apiVehicles = unique.map((item, idx) => ({
+                id: idx + 1,
+                // Para B2C (1 veículo): usa a marca do localStorage (mais confiável)
+                // Para B2B (múltiplos): tenta extrair do veiculoInfo
+                marca: unique.length === 1 && localV?.marca
+                  ? localV.marca
+                  : (item.veiculoInfo || "").split(" ")[0] || "—",
+                model: unique.length === 1 && localV
+                  ? `${localV.marca} ${localV.modelo}`
+                  : item.veiculoInfo || "Veículo",
+                year: unique.length === 1 && localV?.ano
+                  ? parseInt(localV.ano)
+                  : item.mesReferencia ? parseInt(item.mesReferencia.split("-")[0]) : new Date().getFullYear(),
                 status: "Ativo",
                 type: "Sedan",
-              },
-              {
-                id: 2,
-                plate: "XYZ-9876",
-                model: "Honda Civic",
-                year: 2024,
-                status: "Ativo",
-                type: "Sedan",
-              },
-            ],
-          });
-        } else {
-          resolve({
-            role: "B2C",
-            vehicles: [
-              {
-                id: 3,
-                plate: "DEF-5678",
-                model: "Hyundai HB20",
-                year: 2025,
-                status: "Ativo",
-                type: "Hatch",
-              },
-            ],
-          });
-        }
-      }, 1000); // 1 second delay to simulate network request
-    });
+              }));
+              break;
+            }
+          }
+        } catch (_) {}
+      }
+
+      if (apiVehicles.length > 0) {
+        return {
+          role: apiVehicles.length > 1 ? "B2B" : "B2C",
+          vehicles: apiVehicles,
+        };
+      }
+
+      // Fallback: veículo salvo no localStorage pela calculadora
+      if (localV) {
+        return {
+          role: "B2C",
+          vehicles: [
+            {
+              id: 1,
+              marca: localV.marca || "—",
+              model: `${localV.marca} ${localV.modelo}`,
+              year: parseInt(localV.ano) || new Date().getFullYear(),
+              status: "Ativo",
+              type: "Sedan",
+              fuelType: localV.fuelType,
+            },
+          ],
+        };
+      }
+
+      return { role: "B2C", vehicles: [] };
+    } catch (err) {
+      console.error("Erro ao buscar veículos:", err);
+      return { role: "B2C", vehicles: [] };
+    }
   };
 
   useEffect(() => {
@@ -423,7 +465,7 @@ export default function Veiculos({ userName }) {
     let isMounted = true;
     setLoading(true);
 
-    fetchVehicles(userName).then((res) => {
+    fetchVehicles().then((res) => {
       if (isMounted) {
         setData(res);
         setLoading(false);
@@ -529,7 +571,7 @@ export default function Veiculos({ userName }) {
                 </h3>
                 <div className="flex items-center gap-4 text-sm text-gray-500">
                   <span>
-                    Placa: <strong className="text-gray-900">{v.plate}</strong>
+                    Marca: <strong className="text-gray-900">{v.marca || "—"}</strong>
                   </span>
                   <span>
                     Ano: <strong className="text-gray-900">{v.year}</strong>
@@ -578,7 +620,7 @@ export default function Veiculos({ userName }) {
               <thead>
                 <tr className="border-b border-gray-100 text-[10px] font-semibold text-gray-400 uppercase tracking-widest bg-white">
                   <th className="py-4 px-6 font-medium">Veículo</th>
-                  <th className="py-4 px-6 font-medium">Placa</th>
+                  <th className="py-4 px-6 font-medium">Marca</th>
                   <th className="py-4 px-6 font-medium">Ano / Tipo</th>
                   <th className="py-4 px-6 font-medium">Status</th>
                   <th className="py-4 px-6 font-medium text-right">Ações</th>
@@ -601,8 +643,8 @@ export default function Veiculos({ userName }) {
                       </div>
                     </td>
                     <td className="py-4 px-6">
-                      <span className="inline-block px-2.5 py-1 bg-gray-100 border border-gray-200 rounded-md text-xs font-mono font-medium text-gray-700 uppercase">
-                        {v.plate}
+                      <span className="inline-block px-2.5 py-1 bg-emerald-50 border border-emerald-100 rounded-md text-xs font-semibold text-emerald-800">
+                        {v.marca || "—"}
                       </span>
                     </td>
                     <td className="py-4 px-6 text-sm text-gray-500">
