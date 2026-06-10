@@ -495,16 +495,16 @@ export default function Simulador() {
   return (
     <div
       ref={containerRef}
-      className="bg-white/95 backdrop-blur-md rounded-[2rem] p-8 md:p-14 w-full max-w-6xl mx-auto shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-gray-100"
+      className="bg-white/95 backdrop-blur-md rounded-[2rem] p-6 md:p-14 w-full max-w-6xl mx-auto shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-gray-100"
     >
-      <div className="flex flex-col lg:flex-row gap-16 items-center lg:items-start">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-center lg:items-start">
         {/* Esquerda: Textos */}
         <div className="flex-1 lg:max-w-md w-full">
-          <div className="calc-anim-left inline-block px-3 py-1 rounded-md border border-emerald-100 bg-emerald-50 text-xs font-semibold text-emerald-800 mb-8 uppercase tracking-wider">
+          <div className="calc-anim-left inline-block px-3 py-1 rounded-md border border-emerald-100 bg-emerald-50 text-xs font-semibold text-emerald-800 mb-6 lg:mb-8 uppercase tracking-wider">
             Simulador Taggy
           </div>
 
-          <h2 className="calc-anim-left text-4xl lg:text-5xl font-medium text-gray-900 tracking-tight leading-[1.15] mb-6">
+          <h2 className="calc-anim-left text-3xl md:text-4xl lg:text-5xl font-medium text-gray-900 tracking-tight leading-[1.15] mb-4 lg:mb-6">
             Descubra o seu potencial de economia.
           </h2>
 

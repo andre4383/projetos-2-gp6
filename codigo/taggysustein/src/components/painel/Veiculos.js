@@ -526,7 +526,7 @@ export default function Veiculos({ userName }) {
 
   return (
     <div className="max-w-[1200px] mx-auto space-y-6">
-      <div className="flex justify-between items-end mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
             Meus Veículos
@@ -539,7 +539,7 @@ export default function Veiculos({ userName }) {
           (data.role === "B2C" && data.vehicles.length === 0)) && (
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-[#065f46] hover:bg-[#044e3a] text-white rounded-md text-sm font-medium transition-colors shadow-sm"
+            className="flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto bg-[#065f46] hover:bg-[#044e3a] text-white rounded-md text-sm font-medium transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4" /> Cadastrar Veículo
           </button>
@@ -730,7 +730,7 @@ export default function Veiculos({ userName }) {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <SearchableSelect
                     label="Ano"

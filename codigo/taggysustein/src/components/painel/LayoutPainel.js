@@ -483,14 +483,14 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
             ) : (
               <div className="max-w-[1200px] mx-auto space-y-6">
                 <div className="dash-welcome flex flex-col lg:flex-row lg:justify-between lg:items-end gap-4 mb-8">
-                  <h1 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">
+                  <h1 className="text-lg md:text-2xl font-bold text-gray-900 tracking-tight">
                     Bem-vindo de volta, {displayUserName}.
                   </h1>
-                  <div className="flex flex-wrap items-center gap-2 md:gap-3">
-                    <button className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-md text-xs md:text-sm font-medium text-gray-700 hover:border-[#065f46] hover:text-[#065f46] transition-colors">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <button className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 border border-gray-200 rounded-md text-xs md:text-sm font-medium text-gray-700 hover:border-[#065f46] hover:text-[#065f46] transition-colors w-full sm:w-auto">
                       Mensal <ChevronDown className="w-4 h-4" />
                     </button>
-                    <div className="flex-1 min-w-[120px]">
+                    <div className="flex-1 min-w-[120px] w-full sm:w-auto">
                       <SeletorMes
                         value={selectedMonth}
                         onChange={setSelectedMonth}
@@ -498,9 +498,9 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                     </div>
                     <button
                       onClick={() => setIsExportModalOpen(true)}
-                      className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-1.5 bg-[#065f46] hover:bg-[#044e3a] text-white rounded-md text-xs md:text-sm font-medium transition-colors shadow-sm"
+                      className="flex items-center justify-center gap-2 px-3 py-2 md:px-4 md:py-1.5 bg-[#065f46] hover:bg-[#044e3a] text-white rounded-md text-xs md:text-sm font-medium transition-colors shadow-sm w-full sm:w-auto"
                     >
-                      <Download className="w-4 h-4" /> <span className="hidden sm:inline">Exportar PDF</span>
+                      <Download className="w-4 h-4" /> <span className="inline">Exportar PDF</span>
                     </button>
                   </div>
                 </div>
@@ -632,19 +632,21 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                         </div>
                       </div>
 
-                      <div className="ml-8 mt-3 flex justify-between px-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
-                        <span>JAN</span>
-                        <span>FEV</span>
-                        <span>MAR</span>
-                        <span>ABR</span>
-                        <span>MAI</span>
-                        <span>JUN</span>
-                        <span>JUL</span>
-                        <span>AGO</span>
-                        <span>SET</span>
-                        <span>OUT</span>
-                        <span>NOV</span>
-                        <span>DEZ</span>
+                      <div className="overflow-x-auto w-full pb-2">
+                        <div className="ml-8 mt-3 flex justify-between px-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider min-w-[300px]">
+                          <span>JAN</span>
+                          <span>FEV</span>
+                          <span>MAR</span>
+                          <span>ABR</span>
+                          <span>MAI</span>
+                          <span>JUN</span>
+                          <span>JUL</span>
+                          <span>AGO</span>
+                          <span>SET</span>
+                          <span>OUT</span>
+                          <span>NOV</span>
+                          <span>DEZ</span>
+                        </div>
                       </div>
                     </div>
 
@@ -699,21 +701,23 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                        <div className="relative flex-1 md:flex-none">
+                      <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 w-full md:w-auto">
+                        <div className="relative w-full sm:w-48">
                           <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                           <input
                             type="text"
                             placeholder="Buscar transações..."
-                            className="w-full md:w-48 bg-[#F9FAFB] border border-gray-200 rounded-md py-1.5 pl-8 pr-3 text-xs outline-none focus:border-[#065f46] focus:ring-1 focus:ring-[#065f46] focus:bg-white transition-colors"
+                            className="w-full bg-[#F9FAFB] border border-gray-200 rounded-md py-1.5 pl-8 pr-3 text-xs outline-none focus:border-[#065f46] focus:ring-1 focus:ring-[#065f46] focus:bg-white transition-colors"
                           />
                         </div>
-                        <button className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-md text-xs font-medium text-gray-700 hover:bg-emerald-50 hover:text-[#065f46] hover:border-[#065f46]/30 transition-colors whitespace-nowrap">
-                          + Nova
-                        </button>
-                        <button className="p-1.5 border border-gray-200 rounded-md text-gray-500 hover:bg-gray-50 shrink-0">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+                          <button className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-md text-xs font-medium text-gray-700 hover:bg-emerald-50 hover:text-[#065f46] hover:border-[#065f46]/30 transition-colors whitespace-nowrap">
+                            + Nova
+                          </button>
+                          <button className="p-1.5 border border-gray-200 rounded-md text-gray-500 hover:bg-gray-50 shrink-0">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     </div>
 

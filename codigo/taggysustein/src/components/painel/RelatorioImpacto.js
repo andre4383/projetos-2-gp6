@@ -154,7 +154,7 @@ export default function RelatorioImpacto({ userName }) {
 
   return (
     <div className="max-w-[1200px] mx-auto space-y-6" ref={containerRef}>
-      <div className="flex justify-between items-end mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-3">
             <Leaf className="w-6 h-6 text-[#065f46]" />
@@ -165,7 +165,7 @@ export default function RelatorioImpacto({ userName }) {
             frota.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           <SeletorMes value={selectedMonth} onChange={setSelectedMonth} />
         </div>
       </div>
@@ -195,7 +195,7 @@ export default function RelatorioImpacto({ userName }) {
               className="impact-card bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden"
             >
               {/* Card Header */}
-              <div className="bg-[#FAFBFC] border-b border-gray-100 px-6 py-4 flex justify-between items-center">
+              <div className="bg-[#FAFBFC] border-b border-gray-100 px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#065f46]">
                     <Car className="w-5 h-5" />
@@ -204,12 +204,12 @@ export default function RelatorioImpacto({ userName }) {
                     <div className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-0.5">
                       Veículo
                     </div>
-                    <div className="text-base font-bold text-gray-900">
+                    <div className="text-base font-bold text-gray-900 break-words">
                       {item.veiculoInfo}
                     </div>
                   </div>
                 </div>
-                <div className="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600 shadow-sm">
+                <div className="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600 shadow-sm shrink-0">
                   Ref: {item.mesReferencia}
                 </div>
               </div>
@@ -355,7 +355,7 @@ export default function RelatorioImpacto({ userName }) {
                       </h3>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
                       <div className="gain-metric bg-white/10 rounded-xl p-3 border border-white/10 backdrop-blur-sm">
                         <div className="text-[10px] text-emerald-100 uppercase tracking-wider mb-1 flex items-center gap-1">
                           <Leaf className="w-3 h-3" /> CO₂ Evitado
@@ -380,7 +380,7 @@ export default function RelatorioImpacto({ userName }) {
                         </div>
                       </div>
 
-                      <div className="gain-metric bg-white/10 rounded-xl p-3 border border-white/10 backdrop-blur-sm">
+                      <div className="gain-metric bg-white/10 rounded-xl p-3 border border-white/10 backdrop-blur-sm sm:col-span-2 lg:col-span-1">
                         <div className="text-[10px] text-emerald-100 uppercase tracking-wider mb-1 flex items-center gap-1">
                           <FileText className="w-3 h-3" /> Papel
                         </div>
