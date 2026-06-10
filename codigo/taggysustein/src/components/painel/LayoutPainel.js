@@ -552,102 +552,122 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
 
                   <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4 mt-6">
                     <div className="dash-chart-card bg-white border border-gray-200 rounded-xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-                      <div className="flex justify-between items-center mb-6">
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
-                            TENDÊNCIA DE IMPACTO AMBIENTAL
-                          </h3>
-                          <div className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px] relative group cursor-help">
-                            ?
-                            <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] bg-gray-800 text-white text-[10px] p-2 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-lg z-20 font-normal normal-case tracking-normal text-left">
-                              Histórico mensal de impacto e emissões.
-                              <div className="absolute top-full left-1.5 border-4 border-transparent border-t-gray-800"></div>
+                      <div className="flex items-center gap-2 mb-5">
+                        <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                          IMPACTO DO MÊS SELECIONADO
+                        </h3>
+                      </div>
+
+                      {/* Header: Emissões Totais evitadas */}
+                      <div className="mb-6 flex items-baseline gap-3">
+                        <span className="text-sm text-gray-500 font-medium">CO₂ Evitado:</span>
+                        <span className="text-2xl font-bold text-[#065f46] tracking-tight">{dashboardData.emissionsTotal}</span>
+                      </div>
+
+                      {/* Comparação visual: Sem Taggy vs Com Taggy */}
+                      <div className="space-y-4">
+                        {/* CO2 */}
+                        {(() => {
+                          const semCo2 = backendData.reduce((a, c) => a + (c.cenarioSemTaggy?.gramasCo2Emitidos || 0), 0) / 1000;
+                          const comCo2 = backendData.reduce((a, c) => a + (c.cenarioComTaggy?.gramasCo2Emitidos || 0), 0) / 1000;
+                          const maxCo2 = semCo2 || 1;
+                          const semW = 100;
+                          const comW = semCo2 > 0 ? Math.round((comCo2 / semCo2) * 100) : 0;
+                          return (
+                            <div>
+                              <div className="flex items-center justify-between text-xs font-medium text-gray-600 mb-2">
+                                <span className="flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span>
+                                  CO₂ Emitido
+                                </span>
+                              </div>
+                              <div className="space-y-1.5">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] text-gray-400 w-[60px] shrink-0 text-right">Sem Taggy</span>
+                                  <div className="flex-1 bg-red-100 rounded-full h-3 overflow-hidden">
+                                    <div className="bg-red-400 h-full rounded-full" style={{ width: `${semW}%` }}></div>
+                                  </div>
+                                  <span className="text-[10px] font-semibold text-gray-600 w-[50px] shrink-0">{semCo2.toFixed(1)} kg</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] text-gray-400 w-[60px] shrink-0 text-right">Com Taggy</span>
+                                  <div className="flex-1 bg-emerald-100 rounded-full h-3 overflow-hidden">
+                                    <div className="bg-[#065f46] h-full rounded-full" style={{ width: `${comW}%` }}></div>
+                                  </div>
+                                  <span className="text-[10px] font-semibold text-[#065f46] w-[50px] shrink-0">{comCo2.toFixed(1)} kg</span>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
+                          );
+                        })()}
 
-                      </div>
-
-                      <div className="flex justify-between items-end mb-8">
-                        <div className="flex items-baseline gap-3">
-                          <span className="text-sm text-gray-500 font-medium">
-                            Emissões Totais:
-                          </span>
-                          <span className="text-2xl font-bold text-gray-900 tracking-tight">
-                            {dashboardData.emissionsTotal}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-gray-200"></div>
-                            <span className="text-[10px] font-semibold text-gray-400 uppercase">
-                              MÉDIA MENSAL
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-[#065f46]"></div>
-                            <span className="text-[10px] font-semibold text-[#065f46] uppercase">
-                              MÊS ATUAL
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="h-56 w-full relative flex items-end justify-between border-b border-gray-100 pb-2">
-                        <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-gray-400 font-medium pb-2">
-                          <span>40k</span>
-                          <span>30k</span>
-                          <span>20k</span>
-                          <span>10k</span>
-                          <span>0k</span>
-                        </div>
-
-                        <div className="absolute left-6 right-0 top-0 h-full flex flex-col justify-between pb-2 z-0">
-                          {[1, 2, 3, 4, 5].map((i) => (
-                            <div
-                              key={i}
-                              className="w-full border-t border-dashed border-gray-100"
-                            ></div>
-                          ))}
-                        </div>
-
-                        <div className="ml-8 w-full h-full flex items-end justify-between px-2 z-10">
-                          {dashboardData.impactChart.map((val, i) => (
-                            <div
-                              key={i}
-                              className="flex flex-col gap-[2px] w-4 items-center justify-end chart-bar-anim"
-                              style={{ height: `${val}%` }}
-                            >
-                              <div
-                                className="w-full bg-emerald-100 rounded-[1px]"
-                                style={{ flex: 0.4 }}
-                              ></div>
-                              <div
-                                className="w-full bg-[#065f46] rounded-[1px]"
-                                style={{ flex: 0.6 }}
-                              ></div>
+                        {/* Combustível */}
+                        {(() => {
+                          const semComb = backendData.reduce((a, c) => a + (c.cenarioSemTaggy?.litrosCombustivelConsumidos || 0), 0);
+                          const comComb = backendData.reduce((a, c) => a + (c.cenarioComTaggy?.litrosCombustivelConsumidos || 0), 0);
+                          const semW = 100;
+                          const comW = semComb > 0 ? Math.round((comComb / semComb) * 100) : 0;
+                          return (
+                            <div>
+                              <div className="flex items-center justify-between text-xs font-medium text-gray-600 mb-2">
+                                <span className="flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>
+                                  Combustível
+                                </span>
+                              </div>
+                              <div className="space-y-1.5">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] text-gray-400 w-[60px] shrink-0 text-right">Sem Taggy</span>
+                                  <div className="flex-1 bg-red-100 rounded-full h-3 overflow-hidden">
+                                    <div className="bg-red-400 h-full rounded-full" style={{ width: `${semW}%` }}></div>
+                                  </div>
+                                  <span className="text-[10px] font-semibold text-gray-600 w-[50px] shrink-0">{semComb.toFixed(1)} L</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] text-gray-400 w-[60px] shrink-0 text-right">Com Taggy</span>
+                                  <div className="flex-1 bg-emerald-100 rounded-full h-3 overflow-hidden">
+                                    <div className="bg-[#065f46] h-full rounded-full" style={{ width: `${comW}%` }}></div>
+                                  </div>
+                                  <span className="text-[10px] font-semibold text-[#065f46] w-[50px] shrink-0">{comComb.toFixed(1)} L</span>
+                                </div>
+                              </div>
                             </div>
-                          ))}
-                        </div>
-                      </div>
+                          );
+                        })()}
 
-                      <div className="overflow-x-auto w-full pb-2">
-                        <div className="ml-8 mt-3 flex justify-between px-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider min-w-[300px]">
-                          <span>JAN</span>
-                          <span>FEV</span>
-                          <span>MAR</span>
-                          <span>ABR</span>
-                          <span>MAI</span>
-                          <span>JUN</span>
-                          <span>JUL</span>
-                          <span>AGO</span>
-                          <span>SET</span>
-                          <span>OUT</span>
-                          <span>NOV</span>
-                          <span>DEZ</span>
-                        </div>
+                        {/* Papel */}
+                        {(() => {
+                          const semPapel = backendData.reduce((a, c) => a + (c.cenarioSemTaggy?.gramasPapelUtilizados || 0), 0);
+                          return (
+                            <div>
+                              <div className="flex items-center justify-between text-xs font-medium text-gray-600 mb-2">
+                                <span className="flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
+                                  Papel Gasto
+                                </span>
+                              </div>
+                              <div className="space-y-1.5">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] text-gray-400 w-[60px] shrink-0 text-right">Sem Taggy</span>
+                                  <div className="flex-1 bg-red-100 rounded-full h-3 overflow-hidden">
+                                    <div className="bg-red-400 h-full rounded-full" style={{ width: "100%" }}></div>
+                                  </div>
+                                  <span className="text-[10px] font-semibold text-gray-600 w-[50px] shrink-0">{semPapel} g</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] text-gray-400 w-[60px] shrink-0 text-right">Com Taggy</span>
+                                  <div className="flex-1 bg-emerald-100 rounded-full h-3 overflow-hidden">
+                                    <div className="bg-[#065f46] h-full rounded-full" style={{ width: "0%" }}></div>
+                                  </div>
+                                  <span className="text-[10px] font-semibold text-[#065f46] w-[50px] shrink-0">0 g</span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
+
 
                     <div className="dash-metric-card bg-[#065f46] border border-[#044e3a] rounded-xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:bg-[#054d38] transition-colors h-full">
                       <div className="flex justify-between items-start mb-4">
