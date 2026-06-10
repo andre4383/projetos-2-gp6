@@ -440,30 +440,10 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
             </div>
 
             <div className="flex items-center gap-3 md:gap-6">
-              <div className="relative w-40 md:w-64 hidden sm:block">
-                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="Buscar..."
-                  className="w-full bg-[#F9FAFB] border border-gray-200 rounded-md py-1.5 pl-9 pr-8 text-sm outline-none focus:border-[#065f46] focus:ring-1 focus:ring-[#065f46] focus:bg-white transition-all"
-                />
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                  <span className="text-[10px] font-mono text-gray-400 bg-white border border-gray-200 rounded px-1">
-                    ⌘
-                  </span>
-                  <span className="text-[10px] font-mono text-gray-400 bg-white border border-gray-200 rounded px-1">
-                    K
-                  </span>
-                </div>
-              </div>
+
 
               <div className="flex items-center gap-4 text-gray-400">
-                <button className="hover:text-[#065f46] transition-colors">
-                  <Bell className="w-5 h-5" />
-                </button>
-                <button className="hover:text-[#065f46] transition-colors">
-                  <Inbox className="w-5 h-5" />
-                </button>
+
                 <div className="w-6 h-6 rounded-full overflow-hidden cursor-pointer ml-1 border border-emerald-200">
                   <img
                     src={`https://ui-avatars.com/api/?name=${encodeURIComponent(displayUserName)}&background=065f46&color=fff`}
@@ -487,9 +467,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                     Bem-vindo de volta, {displayUserName}.
                   </h1>
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                    <button className="flex items-center justify-center gap-2 px-3 py-2 sm:py-1.5 border border-gray-200 rounded-md text-xs md:text-sm font-medium text-gray-700 hover:border-[#065f46] hover:text-[#065f46] transition-colors w-full sm:w-auto">
-                      Mensal <ChevronDown className="w-4 h-4" />
-                    </button>
+
                     <div className="flex-1 min-w-[120px] w-full sm:w-auto">
                       <SeletorMes
                         value={selectedMonth}
@@ -566,7 +544,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                             </div>
                           </div>
                         </div>
-                        <MoreHorizontal className="w-4 h-4 text-gray-400 cursor-pointer hover:text-[#065f46] transition-colors" />
+
                       </div>
 
                       <div className="flex justify-between items-end mb-8">
@@ -701,44 +679,20 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 w-full md:w-auto">
-                        <div className="relative w-full sm:w-48">
-                          <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                          <input
-                            type="text"
-                            placeholder="Buscar transações..."
-                            className="w-full bg-[#F9FAFB] border border-gray-200 rounded-md py-1.5 pl-8 pr-3 text-xs outline-none focus:border-[#065f46] focus:ring-1 focus:ring-[#065f46] focus:bg-white transition-colors"
-                          />
-                        </div>
-                        <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
-                          <button className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-md text-xs font-medium text-gray-700 hover:bg-emerald-50 hover:text-[#065f46] hover:border-[#065f46]/30 transition-colors whitespace-nowrap">
-                            + Nova
-                          </button>
-                          <button className="p-1.5 border border-gray-200 rounded-md text-gray-500 hover:bg-gray-50 shrink-0">
-                            <MoreHorizontal className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
+
                     </div>
 
                     <div className="overflow-x-auto">
                       <table className="w-full text-left">
                         <thead>
                           <tr className="border-b border-gray-100 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
-                            <th className="pb-3 px-2 font-medium w-8">
-                              <input
-                                type="checkbox"
-                                className="rounded border-gray-300 text-[#065f46] focus:ring-[#065f46]"
-                              />
-                            </th>
+
                             <th className="pb-3 px-2 font-medium">ID:</th>
                             <th className="pb-3 px-2 font-medium">PRAÇA:</th>
                             <th className="pb-3 px-2 font-medium">ESTADO:</th>
                             <th className="pb-3 px-2 font-medium">STATUS:</th>
 
-                            <th className="pb-3 px-2 font-medium text-right">
-                              AÇÕES
-                            </th>
+
                           </tr>
                         </thead>
                         <tbody>
@@ -747,12 +701,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                               key={idx}
                               className="table-row-anim border-b border-gray-50 hover:bg-gray-50/50 transition-colors text-sm text-gray-600"
                             >
-                              <td className="py-3 px-2">
-                                <input
-                                  type="checkbox"
-                                  className="rounded border-gray-300 text-[#065f46] focus:ring-[#065f46]"
-                                />
-                              </td>
+
                               <td className="py-3 px-2 font-medium text-gray-400">
                                 {row.id}
                               </td>
@@ -783,11 +732,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                                 )}
                               </td>
 
-                              <td className="py-3 px-2 text-right">
-                                <button className="p-1 border border-gray-200 rounded text-gray-400 hover:text-[#065f46] hover:border-[#065f46]/30 hover:bg-emerald-50 transition-colors">
-                                  <MoreHorizontal className="w-4 h-4" />
-                                </button>
-                              </td>
+
                             </tr>
                           ))}
                         </tbody>

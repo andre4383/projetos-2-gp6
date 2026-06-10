@@ -579,11 +579,6 @@ export default function Veiculos({ userName }) {
                 </div>
               </div>
 
-              <div className="mt-8 pt-4 border-t border-gray-100 flex items-center gap-3">
-                <button className="flex-1 flex items-center justify-center gap-2 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                  <Settings className="w-4 h-4" /> Gerenciar
-                </button>
-              </div>
             </div>
           ))}
 
@@ -623,7 +618,7 @@ export default function Veiculos({ userName }) {
                   <th className="py-4 px-6 font-medium">Marca</th>
                   <th className="py-4 px-6 font-medium">Ano / Tipo</th>
                   <th className="py-4 px-6 font-medium">Status</th>
-                  <th className="py-4 px-6 font-medium text-right">Ações</th>
+
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -658,11 +653,7 @@ export default function Veiculos({ userName }) {
                         {v.status}
                       </span>
                     </td>
-                    <td className="py-4 px-6 text-right">
-                      <button className="p-2 border border-gray-200 rounded-md text-gray-400 hover:text-[#065f46] hover:border-[#065f46]/30 hover:bg-emerald-50 transition-colors">
-                        <Settings className="w-4 h-4" />
-                      </button>
-                    </td>
+
                   </tr>
                 ))}
               </tbody>
