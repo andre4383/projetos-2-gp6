@@ -155,7 +155,7 @@ export default function Simulador() {
         fuelType: fuelType,
       };
 
-      const response = await fetch("/api/v1/calculo/b2c", {
+      const response = await fetch("/api/v1/calculo/impacto-simplificado", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

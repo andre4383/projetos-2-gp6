@@ -100,7 +100,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
             fuelType: localV.fuelType || "GASOLINA",
           };
 
-          const b2cResponse = await fetch("/api/v1/calculo/b2c", {
+          const b2cResponse = await fetch("/api/v1/calculo/impacto-simplificado", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
