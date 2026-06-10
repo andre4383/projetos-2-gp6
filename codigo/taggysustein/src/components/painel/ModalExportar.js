@@ -151,8 +151,7 @@ export default function ModalExportar({ isOpen, onClose, data, userName }) {
                 <h2 className="text-lg font-bold text-gray-800 mb-4 uppercase text-sm tracking-wider border-b border-gray-100 pb-2">Detalhes de Sustentabilidade</h2>
                 <div className="bg-emerald-50/50 p-5 rounded-lg border border-emerald-100">
                   <p className="text-sm text-gray-700 leading-relaxed">
-                    No período analisado, o usuário <span className="font-semibold">{userName}</span> gerou uma economia total de <span className="font-semibold text-[#065f46]">{data.economyTotal}</span> utilizando o sistema Taggy.
-                    Além disso, evitou a emissão de <span className="font-semibold text-[#065f46]">{data.emissionsTotal}</span>, contribuindo ativamente para a redução da pegada de carbono e promovendo uma mobilidade mais sustentável.
+                    No período analisado, o usuário <span className="font-semibold">{userName}</span> evitou a emissão de <span className="font-semibold text-[#065f46]">{data.emissionsTotal}</span> utilizando o sistema Taggy, contribuindo ativamente para a redução da pegada de carbono e promovendo uma mobilidade mais sustentável.
                   </p>
                 </div>
               </div>
@@ -166,7 +165,7 @@ export default function ModalExportar({ isOpen, onClose, data, userName }) {
                       <th className="pb-2 font-medium">ID</th>
                       <th className="pb-2 font-medium">Praça</th>
                       <th className="pb-2 font-medium">Status</th>
-                      <th className="pb-2 font-medium text-right">Economia</th>
+
                     </tr>
                   </thead>
                   <tbody>
@@ -175,7 +174,7 @@ export default function ModalExportar({ isOpen, onClose, data, userName }) {
                         <td className="py-2.5">{row.id}</td>
                         <td className="py-2.5">{row.praca}</td>
                         <td className="py-2.5">{row.status === "Success" ? "Sucesso" : row.status === "Pending" ? "Pendente" : "Reembolsado"}</td>
-                        <td className="py-2.5 text-right font-medium">{row.ec}</td>
+
                       </tr>
                     ))}
                   </tbody>
