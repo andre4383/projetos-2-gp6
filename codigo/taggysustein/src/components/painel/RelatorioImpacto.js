@@ -327,15 +327,10 @@ export default function RelatorioImpacto({ userName }) {
                           <FileText className="w-3.5 h-3.5 text-gray-400" />{" "}
                           Papel Gasto
                         </span>
-                        <span>
-                          {formatNumber(
-                            item.cenarioComTaggy.gramasPapelUtilizados,
-                          )}{" "}
-                          g
-                        </span>
+                        <span>0 g</span>
                       </div>
                       <div className="w-full bg-gray-100 rounded-full h-1.5">
-                        <div className="bg-[#065f46]/40 h-1.5 rounded-full w-[5%]"></div>
+                        <div className="bg-[#065f46]/40 h-1.5 rounded-full w-[0%]"></div>
                       </div>
                     </div>
                   </div>

@@ -52,7 +52,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
   useEffect(() => {
     const savedName = localStorage.getItem("userName");
     if (savedName) setUserName(savedName);
-    else setUserName("Camila"); // Fallback inicial
+    else setUserName("Usuário"); // Fallback inicial
   }, []);
 
   const handleSelectUser = (newName) => {

@@ -188,6 +188,7 @@ export default function Simulador() {
       localStorage.setItem("taggySustainResultado", JSON.stringify(resultadoCompleto));
       localStorage.setItem("pendingEmail", email);
       localStorage.setItem("pendingSenha", senha);
+      localStorage.setItem("userName", nome);
 
       router.push("/resultado");
     } catch (err) {
