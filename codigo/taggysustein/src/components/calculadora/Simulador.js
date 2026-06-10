@@ -130,12 +130,14 @@ export default function Simulador() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(seedPayload),
         });
-        // Salva dados do veículo para exibição na página de veículos
+        // Salva dados do veículo para exibição na página de veículos e fallback do dashboard
         localStorage.setItem("userVehicle", JSON.stringify({
           marca: marcaNome,
           modelo: modeloNome,
           ano: String(anoVeiculo),
           fuelType: fuelType,
+          pedagios: parseInt(pedagiosPorMes) || 0,
+          estacionamentos: parseInt(estacionamentosPorMes) || 0,
         }));
       } catch (seedErr) {
         console.warn("Aviso: não foi possível registrar usuário no banco.", seedErr);

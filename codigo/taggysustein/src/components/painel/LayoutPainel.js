@@ -74,19 +74,82 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
         `/api/calculos/b2b/usuario/${userId}?mes=${month}`,
       );
 
-      if (!response.ok) {
-        throw new Error("Erro ao buscar dados do servidor.");
+      let b2bResult = [];
+      if (response.ok) {
+        b2bResult = await response.json();
       }
 
-      const result = await response.json();
-      const dataArray = Array.isArray(result) ? result : [];
-      setBackendData(dataArray);
-      // Inferir B2B se houver mais de 1 veículo nos resultados
-      const uniqueVehicles = new Set(dataArray.map((item) => item.veiculoInfo)).size;
-      setIsB2B(uniqueVehicles > 1);
+      if (Array.isArray(b2bResult) && b2bResult.length > 0) {
+        setBackendData(b2bResult);
+        const uniqueVehicles = new Set(b2bResult.map((item) => item.veiculoInfo)).size;
+        setIsB2B(uniqueVehicles > 1);
+      } else {
+        // Fallback: Tenta usar o veículo salvo no localStorage e chama o endpoint B2C
+        const storedVehicle = localStorage.getItem("userVehicle");
+        if (storedVehicle) {
+          const localV = JSON.parse(storedVehicle);
+          
+          const payload = {
+            nomeCompleto: userName || "Usuário",
+            email: "usuario@email.com",
+            marcaVeiculo: localV.marca || "Marca",
+            modeloVeiculo: localV.modelo || "Modelo",
+            anoVeiculo: localV.ano || "2020",
+            totalPassagensPedagio: localV.pedagios || 10,
+            totalPassagensEstacionamento: localV.estacionamentos || 5,
+            fuelType: localV.fuelType || "GASOLINA",
+          };
+
+          const b2cResponse = await fetch("/api/v1/calculo/b2c", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          if (b2cResponse.ok) {
+            const b2cData = await b2cResponse.json();
+            
+            // Simula a estrutura B2B a partir dos ganhos do B2C
+            const co2Evitado = b2cData.gramasCo2Evitados || 0;
+            const combEvitado = b2cData.litrosCombustivelEvitados || 0;
+            const papelEvitado = b2cData.gramasPapelEvitados || 0;
+
+            const co2Sem = co2Evitado > 0 ? co2Evitado / 0.15 : 0;
+            const combSem = combEvitado > 0 ? combEvitado / 0.15 : 0;
+
+            setBackendData([
+              {
+                veiculoInfo: `${localV.marca} ${localV.modelo}`,
+                cenarioSemTaggy: {
+                  gramasCo2Emitidos: co2Sem,
+                  litrosCombustivelConsumidos: combSem,
+                  gramasPapelUtilizados: papelEvitado
+                },
+                cenarioComTaggy: {
+                  gramasCo2Emitidos: co2Sem - co2Evitado,
+                  litrosCombustivelConsumidos: combSem - combEvitado,
+                  gramasPapelUtilizados: 0
+                },
+                ganhos: {
+                  gramasCo2Evitados: co2Evitado,
+                  arvoresEquivalentes: b2cData.arvoresEquivalentes || 0,
+                  litrosCombustivelEvitados: combEvitado,
+                  gramasPapelEvitados: papelEvitado,
+                  tempoGanhoSegundos: b2cData.tempoGanhoSegundos || 0
+                }
+              }
+            ]);
+            setIsB2B(false);
+            return;
+          }
+        }
+        setBackendData([]);
+        setIsB2B(false);
+      }
     } catch (err) {
       console.error("API indisponível no dashboard.", err);
       setBackendData([]);
+      setIsB2B(false);
     } finally {
       setLoadingBackend(false);
     }
@@ -211,23 +274,13 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
         title: "EMISSÕES EVITADAS",
         value: co2Str,
         trend: isB2B ? "+4,5 kg" : "+1,2 kg",
-        trendDesc: "mês passado",
         hasChart: true,
         tooltip: "Total de emissões de CO₂ evitadas pelas suas ações.",
-      },
-      {
-        title: "TEMPO ECONOMIZADO",
-        value: tempoStr,
-        trend: isB2B ? "+12 min" : "+4 min",
-        trendDesc: "mês passado",
-        hasChart: true,
-        tooltip: "Tempo economizado em processos digitais.",
       },
       {
         title: "ECONOMIA DE PAPEL",
         value: papelStr,
         trend: isB2B ? "+66 g" : "+15 g",
-        trendDesc: "mês passado",
         hasChart: false,
         tooltip: "Papel economizado ao evitar impressões físicas.",
       },
@@ -236,7 +289,6 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
       title: "ÁRVORES PRESERVADAS",
       value: arvoresStr,
       trend: isB2B ? "+0,2 un." : "+0,1 un.",
-      trendDesc: "mês passado",
     },
     emissionsTotal: `${co2Str} CO₂`,
     impactChart: [
@@ -489,7 +541,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                 </div>
 
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {dashboardData.metrics.map((metric, idx) => (
                       <div
                         key={idx}
@@ -527,9 +579,6 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                           <div className="flex items-center gap-1">
                             <span className="text-xs font-bold text-[#065f46]">
                               {metric.trend}
-                            </span>
-                            <span className="text-[11px] text-gray-400">
-                              {metric.trendDesc}
                             </span>
                           </div>
                         </div>
@@ -645,9 +694,6 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                         <div className="text-right">
                           <div className="text-sm font-bold text-emerald-300">
                             {dashboardData.trees.trend}
-                          </div>
-                          <div className="text-xs text-emerald-200">
-                            {dashboardData.trees.trendDesc}
                           </div>
                         </div>
                       </div>

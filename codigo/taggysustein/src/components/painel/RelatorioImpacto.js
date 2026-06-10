@@ -36,12 +36,74 @@ export default function RelatorioImpacto({ userName }) {
         `/api/calculos/b2b/usuario/${userId}?mes=${month}`,
       );
 
-      if (!response.ok) {
-        throw new Error("Erro ao buscar dados do servidor.");
+      let b2bResult = [];
+      if (response.ok) {
+        b2bResult = await response.json();
       }
 
-      const result = await response.json();
-      setData(Array.isArray(result) ? result : []);
+      if (Array.isArray(b2bResult) && b2bResult.length > 0) {
+        setData(b2bResult);
+      } else {
+        // Fallback: Tenta usar o veículo salvo no localStorage e chama o endpoint B2C
+        const storedVehicle = localStorage.getItem("userVehicle");
+        if (storedVehicle) {
+          const localV = JSON.parse(storedVehicle);
+          
+          const payload = {
+            nomeCompleto: userName || "Usuário",
+            email: "usuario@email.com",
+            marcaVeiculo: localV.marca || "Marca",
+            modeloVeiculo: localV.modelo || "Modelo",
+            anoVeiculo: localV.ano || "2020",
+            totalPassagensPedagio: localV.pedagios || 10,
+            totalPassagensEstacionamento: localV.estacionamentos || 5,
+            fuelType: localV.fuelType || "GASOLINA",
+          };
+
+          const b2cResponse = await fetch("/api/v1/calculo/b2c", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          if (b2cResponse.ok) {
+            const b2cData = await b2cResponse.json();
+            
+            // Simula a estrutura B2B a partir dos ganhos do B2C (assumindo ~15% de redução)
+            const co2Evitado = b2cData.gramasCo2Evitados || 0;
+            const combEvitado = b2cData.litrosCombustivelEvitados || 0;
+            const papelEvitado = b2cData.gramasPapelEvitados || 0;
+
+            const co2Sem = co2Evitado > 0 ? co2Evitado / 0.15 : 0;
+            const combSem = combEvitado > 0 ? combEvitado / 0.15 : 0;
+
+            setData([
+              {
+                veiculoInfo: `${localV.marca} ${localV.modelo}`,
+                cenarioSemTaggy: {
+                  gramasCo2Emitidos: co2Sem,
+                  litrosCombustivelConsumidos: combSem,
+                  gramasPapelUtilizados: papelEvitado
+                },
+                cenarioComTaggy: {
+                  gramasCo2Emitidos: co2Sem - co2Evitado,
+                  litrosCombustivelConsumidos: combSem - combEvitado,
+                  gramasPapelUtilizados: 0
+                },
+                ganhos: {
+                  gramasCo2Evitados: co2Evitado,
+                  arvoresEquivalentes: b2cData.arvoresEquivalentes || 0,
+                  litrosCombustivelEvitados: combEvitado,
+                  gramasPapelEvitados: papelEvitado,
+                  tempoGanhoSegundos: b2cData.tempoGanhoSegundos || 0
+                }
+              }
+            ]);
+            return;
+          }
+        }
+        setData([]);
+      }
     } catch (err) {
       console.error("API indisponível.", err);
       setData([]);
