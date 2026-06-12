@@ -19,6 +19,15 @@ export default function ModalExportar({ isOpen, onClose, data, backendData = [],
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
+          @page {
+            size: A4;
+            margin: 15mm;
+          }
+          html, body {
+            height: auto !important;
+            overflow: visible !important;
+            background: white !important;
+          }
           body * {
             visibility: hidden;
           }
@@ -30,16 +39,19 @@ export default function ModalExportar({ isOpen, onClose, data, backendData = [],
             left: 0;
             top: 0;
             width: 100%;
-            height: 100%;
-            padding: 20mm;
+            min-height: auto !important;
+            height: auto !important;
+            padding: 0 !important;
+            margin: 0 !important;
             background: white !important;
             box-shadow: none !important;
+            overflow: visible !important;
           }
           .no-print {
             display: none !important;
           }
-          .page-break {
-            page-break-before: always;
+          tr, h2 {
+            page-break-inside: avoid;
           }
         }
       `}} />
@@ -186,7 +198,7 @@ export default function ModalExportar({ isOpen, onClose, data, backendData = [],
 
               {/* Análise por Veículo */}
               {backendData.length > 0 && (
-                <div className="page-break">
+                <div>
                   <h2 className="text-lg font-bold text-gray-800 mb-4 uppercase text-sm tracking-wider border-b border-gray-100 pb-2">Análise de Impacto por Veículo</h2>
 
                   {backendData.map((item, idx) => {
