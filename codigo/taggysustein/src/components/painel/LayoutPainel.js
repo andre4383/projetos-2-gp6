@@ -29,6 +29,11 @@ import ModalExportar from "./ModalExportar";
 import RelatorioImpacto from "./RelatorioImpacto";
 import SeletorMes from "./SeletorMes";
 import Simulador from "../calculadora/Simulador";
+import {
+  KG_CO2_POR_ARVORE_ANO,
+  PESO_TICKET_G,
+  FATOR_EMISSAO_PAPEL_KG_CO2_POR_KG,
+} from "@/lib/calculoConstantes";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -255,20 +260,33 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
         value: co2Str,
         trend: isB2B ? "+4,5 kg" : "+1,2 kg",
         hasChart: true,
-        tooltip: "Total de emissões de CO₂ evitadas pelas suas ações.",
+        tooltip: {
+          oQueMede: "Quantidade de CO₂ que sua frota deixou de emitir ao usar o Taggy, considerando combustível economizado em fila e papel não impresso.",
+          metrica: "kg de CO₂",
+          referencia: "Fatores de emissão baseados em IPCC e CETESB.",
+        },
       },
       {
         title: "ECONOMIA DE PAPEL",
         value: papelStr,
         trend: isB2B ? "+66 g" : "+15 g",
         hasChart: false,
-        tooltip: "Papel economizado ao evitar impressões físicas.",
+        tooltip: {
+          oQueMede: "Massa total de papel térmico de tickets que deixou de ser impressa em pedágios e estacionamentos.",
+          metrica: "gramas (ou kg quando ≥ 1.000 g)",
+          referencia: "Peso médio do ticket conforme padrão da indústria.",
+        },
       },
     ],
     trees: {
       title: "ÁRVORES PRESERVADAS",
       value: arvoresStr,
       trend: isB2B ? "+0,2 un." : "+0,1 un.",
+      tooltip: {
+        oQueMede: "Número de árvores adultas que seriam necessárias, em um ano, para absorver o CO₂ que sua frota deixou de emitir.",
+        metrica: "unidades de árvore",
+        referencia: "Capacidade média de absorção arbórea conforme IPCC.",
+      },
     },
     emissionsTotal: `${co2Str} CO₂`,
     impactChart: [
@@ -479,8 +497,18 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                         <div className="flex items-center justify-between mt-4">
                           <div className="w-4 h-4 rounded-full bg-emerald-50 flex items-center justify-center text-[#065f46] text-[9px] font-bold relative group cursor-help">
                             ?
-                            <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] bg-gray-800 text-white text-[10px] p-2 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-lg z-20 font-normal normal-case tracking-normal text-left">
-                              {metric.tooltip}
+                            <div className="absolute bottom-full left-0 mb-2 w-max max-w-[280px] bg-gray-800 text-white text-[10px] p-3 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-lg z-20 font-normal normal-case tracking-normal text-left leading-relaxed space-y-2">
+                              <div>
+                                <div className="font-semibold text-emerald-300 mb-0.5">O que mede</div>
+                                <div className="text-gray-200">{metric.tooltip.oQueMede}</div>
+                              </div>
+                              <div>
+                                <div className="font-semibold text-emerald-300 mb-0.5">Métrica</div>
+                                <div className="text-gray-200">{metric.tooltip.metrica}</div>
+                              </div>
+                              <div className="pt-1 border-t border-gray-700 text-gray-300 italic">
+                                {metric.tooltip.referencia}
+                              </div>
                               <div className="absolute top-full left-1.5 border-4 border-transparent border-t-gray-800"></div>
                             </div>
                           </div>
@@ -498,7 +526,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                     <div className="dash-chart-card bg-white border border-gray-200 rounded-xl p-5 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
                       <div className="flex items-center gap-2 mb-5">
                         <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
-                          IMPACTO DO MÊS SELECIONADO
+                          IMPACTO DO MÊS
                         </h3>
                       </div>
 
@@ -634,8 +662,18 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
                           </h3>
                           <div className="w-4 h-4 rounded-full bg-white/10 flex items-center justify-center text-emerald-100 text-[10px] relative group cursor-help">
                             ?
-                            <div className="absolute bottom-full left-0 mb-2 w-max max-w-[200px] bg-gray-900 text-white text-[10px] p-2 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-lg z-20 font-normal normal-case tracking-normal text-left">
-                              {dashboardData.trees.tooltip}
+                            <div className="absolute bottom-full left-0 mb-2 w-max max-w-[280px] bg-gray-900 text-white text-[10px] p-3 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-lg z-20 font-normal normal-case tracking-normal text-left leading-relaxed space-y-2">
+                              <div>
+                                <div className="font-semibold text-emerald-300 mb-0.5">O que mede</div>
+                                <div className="text-gray-200">{dashboardData.trees.tooltip.oQueMede}</div>
+                              </div>
+                              <div>
+                                <div className="font-semibold text-emerald-300 mb-0.5">Métrica</div>
+                                <div className="text-gray-200">{dashboardData.trees.tooltip.metrica}</div>
+                              </div>
+                              <div className="pt-1 border-t border-gray-700 text-gray-300 italic">
+                                {dashboardData.trees.tooltip.referencia}
+                              </div>
                               <div className="absolute top-full left-1.5 border-4 border-transparent border-t-gray-900"></div>
                             </div>
                           </div>
