@@ -7,7 +7,64 @@ export default function ModalExportar({ isOpen, onClose, data, backendData = [],
   if (!isOpen) return null;
 
   const handleExport = () => {
-    window.print();
+    const source = document.getElementById("printable-report");
+    if (!source) return;
+
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+
+    const styleSheets = Array.from(document.styleSheets)
+      .map((sheet) => {
+        try {
+          if (sheet.href) {
+            return `<link rel="stylesheet" href="${sheet.href}">`;
+          }
+          return `<style>${Array.from(sheet.cssRules).map((r) => r.cssText).join("\n")}</style>`;
+        } catch (_) {
+          return "";
+        }
+      })
+      .join("\n");
+
+    doc.open();
+    doc.write(`<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Relatório TaggySustain</title>
+${styleSheets}
+<style>
+  @page { size: A4; margin: 15mm; }
+  html, body { margin: 0; padding: 0; background: white; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  .vehicle-card { page-break-inside: avoid !important; break-inside: avoid !important; }
+  table { page-break-inside: auto; }
+  tr, h2, thead { page-break-inside: avoid; }
+</style>
+</head>
+<body>${source.outerHTML}</body>
+</html>`);
+    doc.close();
+
+    const triggerPrint = () => {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+      setTimeout(() => document.body.removeChild(iframe), 1000);
+    };
+
+    if (doc.readyState === "complete") {
+      setTimeout(triggerPrint, 300);
+    } else {
+      iframe.onload = () => setTimeout(triggerPrint, 300);
+    }
   };
 
   const currentDate = new Date().toLocaleDateString("pt-BR");
@@ -16,47 +73,9 @@ export default function ModalExportar({ isOpen, onClose, data, backendData = [],
     new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 }).format(num);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
-      <style dangerouslySetInnerHTML={{ __html: `
-        @media print {
-          @page {
-            size: A4;
-            margin: 15mm;
-          }
-          html, body {
-            height: auto !important;
-            overflow: visible !important;
-            background: white !important;
-          }
-          body * {
-            visibility: hidden;
-          }
-          #printable-report, #printable-report * {
-            visibility: visible;
-          }
-          #printable-report {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            min-height: auto !important;
-            height: auto !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            background: white !important;
-            box-shadow: none !important;
-            overflow: visible !important;
-          }
-          .no-print {
-            display: none !important;
-          }
-          tr, h2 {
-            page-break-inside: avoid;
-          }
-        }
-      `}} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm print-ancestor">
 
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl h-[85vh] flex overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl h-[85vh] flex overflow-hidden animate-in fade-in zoom-in-95 duration-200 print-ancestor">
 
         {/* Left Sidebar - Settings (no-print) */}
         <div className="w-80 bg-gray-50 border-r border-gray-200 flex flex-col no-print shrink-0">
@@ -130,12 +149,12 @@ export default function ModalExportar({ isOpen, onClose, data, backendData = [],
         </div>
 
         {/* Right Area - Preview */}
-        <div className="flex-1 bg-[#F5F6F8] overflow-y-auto no-print-bg">
-          <div className="min-h-full flex flex-col items-center p-8 lg:p-12">
+        <div className="flex-1 bg-[#F5F6F8] overflow-y-auto no-print-bg print-ancestor">
+          <div className="min-h-full flex flex-col items-center p-8 lg:p-12 print-ancestor">
             {/* Printable A4 Paper representation */}
             <div
               id="printable-report"
-              className="bg-white shadow-lg w-[210mm] min-h-[297mm] p-[15mm] sm:p-[20mm] shrink-0 print:shadow-none print:w-full print:h-full print:p-0 relative"
+              className="bg-white shadow-lg w-[210mm] min-h-[297mm] p-[15mm] sm:p-[20mm] shrink-0 print:shadow-none print:w-full relative"
             >
               {/* Cabecalho */}
               <div className="border-b-2 border-[#065f46] pb-4 mb-6 flex justify-between items-end">
@@ -211,7 +230,7 @@ export default function ModalExportar({ isOpen, onClose, data, backendData = [],
                     const ano = hasYear ? lastPart : "—";
 
                     return (
-                      <div key={idx} className="mb-6 border border-gray-200 rounded-lg overflow-hidden">
+                      <div key={idx} className="vehicle-card mb-6 border border-gray-200 rounded-lg overflow-hidden">
                         {/* Vehicle Header */}
                         <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
                           <div>
