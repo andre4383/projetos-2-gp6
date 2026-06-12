@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 import { X, FileText, Download, Calendar, CheckCircle2 } from "lucide-react";
 
-export default function ModalExportar({ isOpen, onClose, data, userName }) {
+export default function ModalExportar({ isOpen, onClose, data, backendData = [], userName }) {
   if (!isOpen) return null;
 
   const handleExport = () => {
@@ -11,6 +11,9 @@ export default function ModalExportar({ isOpen, onClose, data, userName }) {
   };
 
   const currentDate = new Date().toLocaleDateString("pt-BR");
+
+  const formatNumber = (num) =>
+    new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 }).format(num);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
@@ -32,15 +35,17 @@ export default function ModalExportar({ isOpen, onClose, data, userName }) {
             background: white !important;
             box-shadow: none !important;
           }
-          /* Hide modal specific UI elements during print */
           .no-print {
             display: none !important;
+          }
+          .page-break {
+            page-break-before: always;
           }
         }
       `}} />
 
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl h-[85vh] flex overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        
+
         {/* Left Sidebar - Settings (no-print) */}
         <div className="w-80 bg-gray-50 border-r border-gray-200 flex flex-col no-print shrink-0">
           <div className="p-5 border-b border-gray-200 flex items-center justify-between bg-white">
@@ -86,7 +91,7 @@ export default function ModalExportar({ isOpen, onClose, data, userName }) {
                 <option>Apenas Histórico</option>
               </select>
             </div>
-            
+
             <div className="space-y-3">
               <label className="text-sm font-semibold text-gray-700">Orientação</label>
               <select className="w-full bg-white border border-gray-200 rounded-lg py-2.5 px-3 text-sm outline-none focus:border-[#065f46] focus:ring-1 focus:ring-[#065f46] transition-all">
@@ -116,7 +121,7 @@ export default function ModalExportar({ isOpen, onClose, data, userName }) {
         <div className="flex-1 bg-[#F5F6F8] overflow-y-auto no-print-bg">
           <div className="min-h-full flex flex-col items-center p-8 lg:p-12">
             {/* Printable A4 Paper representation */}
-            <div 
+            <div
               id="printable-report"
               className="bg-white shadow-lg w-[210mm] min-h-[297mm] p-[15mm] sm:p-[20mm] shrink-0 print:shadow-none print:w-full print:h-full print:p-0 relative"
             >
@@ -156,8 +161,8 @@ export default function ModalExportar({ isOpen, onClose, data, userName }) {
                 </div>
               </div>
 
-              {/* Histórico Recente (Limited for print) */}
-              <div>
+              {/* Carros Cadastrados */}
+              <div className="mb-8">
                 <h2 className="text-lg font-bold text-gray-800 mb-4 uppercase text-sm tracking-wider border-b border-gray-100 pb-2">Carros Cadastrados</h2>
                 <table className="w-full text-left text-sm">
                   <thead>
@@ -177,9 +182,89 @@ export default function ModalExportar({ isOpen, onClose, data, userName }) {
                     ))}
                   </tbody>
                 </table>
-                <p className="text-xs text-gray-400 mt-4 italic text-center">* Fim do relatório *</p>
               </div>
-              
+
+              {/* Análise por Veículo */}
+              {backendData.length > 0 && (
+                <div className="page-break">
+                  <h2 className="text-lg font-bold text-gray-800 mb-4 uppercase text-sm tracking-wider border-b border-gray-100 pb-2">Análise de Impacto por Veículo</h2>
+
+                  {backendData.map((item, idx) => {
+                    const info = (item.veiculoInfo || "").trim();
+                    const parts = info.split(" ");
+                    const lastPart = parts[parts.length - 1];
+                    const hasYear = /^\d{4}$/.test(lastPart);
+                    const marca = parts[0] || "—";
+                    const modelo = hasYear ? parts.slice(1, -1).join(" ") || parts[0] || "—" : parts.slice(1).join(" ") || info || "—";
+                    const ano = hasYear ? lastPart : "—";
+
+                    return (
+                      <div key={idx} className="mb-6 border border-gray-200 rounded-lg overflow-hidden">
+                        {/* Vehicle Header */}
+                        <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+                          <div>
+                            <span className="text-sm font-bold text-gray-900">{modelo}</span>
+                            <span className="text-xs text-gray-500 ml-2">{marca} · {ano}</span>
+                          </div>
+                          <span className="text-xs text-gray-400">Ref: {item.mesReferencia}</span>
+                        </div>
+
+                        {/* Comparison Table */}
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b border-gray-100 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
+                              <th className="py-2 px-4 text-left font-medium">Métrica</th>
+                              <th className="py-2 px-4 text-center font-medium" style={{color: '#dc2626'}}>Sem Taggy</th>
+                              <th className="py-2 px-4 text-center font-medium" style={{color: '#065f46'}}>Com Taggy</th>
+                              <th className="py-2 px-4 text-center font-medium" style={{color: '#065f46'}}>Ganho</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="border-b border-gray-50">
+                              <td className="py-2.5 px-4 text-gray-700 font-medium">CO₂ Emitido</td>
+                              <td className="py-2.5 px-4 text-center text-gray-600">
+                                {formatNumber(item.cenarioSemTaggy?.gramasCo2Emitidos / 1000)} kg
+                              </td>
+                              <td className="py-2.5 px-4 text-center text-gray-600">
+                                {formatNumber(item.cenarioComTaggy?.gramasCo2Emitidos / 1000)} kg
+                              </td>
+                              <td className="py-2.5 px-4 text-center font-bold" style={{color: '#065f46'}}>
+                                -{formatNumber(item.ganhos?.gramasCo2Evitados / 1000)} kg
+                              </td>
+                            </tr>
+                            <tr className="border-b border-gray-50">
+                              <td className="py-2.5 px-4 text-gray-700 font-medium">Combustível</td>
+                              <td className="py-2.5 px-4 text-center text-gray-600">
+                                {formatNumber(item.cenarioSemTaggy?.litrosCombustivelConsumidos)} L
+                              </td>
+                              <td className="py-2.5 px-4 text-center text-gray-600">
+                                {formatNumber(item.cenarioComTaggy?.litrosCombustivelConsumidos)} L
+                              </td>
+                              <td className="py-2.5 px-4 text-center font-bold" style={{color: '#065f46'}}>
+                                -{formatNumber(item.ganhos?.litrosCombustivelEvitados)} L
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="py-2.5 px-4 text-gray-700 font-medium">Papel Gasto</td>
+                              <td className="py-2.5 px-4 text-center text-gray-600">
+                                {formatNumber(item.cenarioSemTaggy?.gramasPapelUtilizados)} g
+                              </td>
+                              <td className="py-2.5 px-4 text-center text-gray-600">
+                                0 g
+                              </td>
+                              <td className="py-2.5 px-4 text-center font-bold" style={{color: '#065f46'}}>
+                                -{formatNumber(item.ganhos?.gramasPapelEvitados)} g
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              <p className="text-xs text-gray-400 mt-4 italic text-center">* Fim do relatório *</p>
             </div>
           </div>
         </div>

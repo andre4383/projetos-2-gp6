@@ -708,6 +708,7 @@ export default function LayoutPainel({ onOpenExportModal, onOpenCalculator }) {
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         data={dashboardData}
+        backendData={backendData}
         userName={displayUserName}
       />
     </div>
