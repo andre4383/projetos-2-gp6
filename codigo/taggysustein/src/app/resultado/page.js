@@ -126,20 +126,23 @@ export default function ResultadoPage() {
             </div>
 
             <div className="anim-fade-up mt-12 flex items-center gap-6">
-              {/* Botões no estilo da imagem 2 (quadrados com ícones) ou imagem 3 (Learn More + Arrow) */}
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => router.push("/login")}
-                  className="px-5 py-2.5 bg-white border border-[#0A3B24]/20 rounded-xl text-sm font-bold text-[#0A3B24] hover:bg-[#F0F5F2] transition-colors"
+                <a
+                  href="https://www.taggy.com.br/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-2.5 bg-[#0A3B24] text-white rounded-xl text-sm font-bold hover:bg-[#062617] transition-colors"
                 >
-                  Fazer Login
-                </button>
-                <button
-                  onClick={() => router.push("/login")}
+                  Venha para a Taggy
+                </a>
+                <a
+                  href="https://www.taggy.com.br/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 bg-[#0A3B24] text-white rounded-xl flex items-center justify-center hover:bg-[#062617] transition-colors"
                 >
                   <ArrowRight className="w-4 h-4" />
-                </button>
+                </a>
               </div>
 
               <button
