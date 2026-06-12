@@ -72,6 +72,44 @@ ${styleSheets}
   const formatNumber = (num) =>
     new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 }).format(num);
 
+  const formatPercent = (sem, com) => {
+    if (!sem || sem === 0) return "—";
+    const pct = ((sem - com) / sem) * 100;
+    return `${pct.toFixed(0)}%`;
+  };
+
+  const totalCo2EvitadoKg =
+    backendData.reduce((acc, c) => acc + (c.ganhos?.gramasCo2Evitados || 0), 0) /
+    1000;
+  const totalCombustivelEvitado = backendData.reduce(
+    (acc, c) => acc + (c.ganhos?.litrosCombustivelEvitados || 0),
+    0,
+  );
+  const totalPapelEvitadoG = backendData.reduce(
+    (acc, c) => acc + (c.cenarioSemTaggy?.gramasPapelUtilizados || 0),
+    0,
+  );
+  const arvoresEquivalentes = totalCo2EvitadoKg / 22;
+  const economiaCombustivelReais = totalCombustivelEvitado * 5.8;
+
+  // Cada ticket pesa 2g — total de passagens derivado do papel utilizado
+  const passagensPorVeiculo = (item) =>
+    Math.round((item.cenarioSemTaggy?.gramasPapelUtilizados || 0) / 2);
+  const totalPassagens = backendData.reduce(
+    (acc, c) => acc + passagensPorVeiculo(c),
+    0,
+  );
+
+  const mesesReferencia = Array.from(
+    new Set(backendData.map((c) => c.mesReferencia).filter(Boolean)),
+  );
+  const periodoAnalise =
+    mesesReferencia.length === 1
+      ? mesesReferencia[0]
+      : mesesReferencia.length > 1
+      ? `${mesesReferencia[0]} a ${mesesReferencia[mesesReferencia.length - 1]}`
+      : "—";
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm print-ancestor">
 
@@ -164,6 +202,7 @@ ${styleSheets}
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-bold text-gray-900">Cliente: {userName}</p>
+                  <p className="text-xs text-gray-500">Período de análise: <span className="font-semibold text-gray-700">{periodoAnalise}</span></p>
                   <p className="text-xs text-gray-500">Gerado em: {currentDate}</p>
                 </div>
               </div>
@@ -191,6 +230,59 @@ ${styleSheets}
                   </p>
                 </div>
               </div>
+
+              {/* Resumo do Período */}
+              {backendData.length > 0 && (
+                <div className="mb-8">
+                  <h2 className="text-lg font-bold text-gray-800 mb-4 uppercase text-sm tracking-wider border-b border-gray-100 pb-2">Resumo do Período Analisado</h2>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">Período</p>
+                      <p className="text-lg font-bold text-gray-900">{periodoAnalise}</p>
+                      <p className="text-[10px] text-gray-400 mt-1">Mês de referência dos dados</p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">Veículos analisados</p>
+                      <p className="text-lg font-bold text-gray-900">{backendData.length}</p>
+                      <p className="text-[10px] text-gray-400 mt-1">Frota com dados no período</p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">Total de passagens</p>
+                      <p className="text-lg font-bold text-gray-900">{formatNumber(totalPassagens)}</p>
+                      <p className="text-[10px] text-gray-400 mt-1">Pedágios + estacionamentos</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Equivalências */}
+              {backendData.length > 0 && (
+                <div className="mb-8">
+                  <h2 className="text-lg font-bold text-gray-800 mb-4 uppercase text-sm tracking-wider border-b border-gray-100 pb-2">Equivalências de Impacto</h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 rounded-lg border border-emerald-100 bg-emerald-50/50">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">Árvores preservadas/ano</p>
+                      <p className="text-2xl font-bold text-[#065f46]">{formatNumber(arvoresEquivalentes)} un.</p>
+                      <p className="text-[10px] text-gray-400 mt-1">Base: 22 kg CO₂ absorvidos por árvore adulta/ano (IPCC)</p>
+                    </div>
+                    <div className="p-4 rounded-lg border border-emerald-100 bg-emerald-50/50">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">Economia em combustível</p>
+                      <p className="text-2xl font-bold text-[#065f46]">R$ {formatNumber(economiaCombustivelReais)}</p>
+                      <p className="text-[10px] text-gray-400 mt-1">Base: R$ 5,80/L (média gasolina comum)</p>
+                    </div>
+                    <div className="p-4 rounded-lg border border-emerald-100 bg-emerald-50/50">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">CO₂ total evitado</p>
+                      <p className="text-2xl font-bold text-[#065f46]">{formatNumber(totalCo2EvitadoKg)} kg</p>
+                      <p className="text-[10px] text-gray-400 mt-1">Soma do ganho de todos os veículos no período</p>
+                    </div>
+                    <div className="p-4 rounded-lg border border-emerald-100 bg-emerald-50/50">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">Papel não impresso</p>
+                      <p className="text-2xl font-bold text-[#065f46]">{formatNumber(totalPapelEvitadoG)} g</p>
+                      <p className="text-[10px] text-gray-400 mt-1">100% dos tickets de pedágio/estacionamento</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Carros Cadastrados */}
               <div className="mb-8">
@@ -237,7 +329,13 @@ ${styleSheets}
                             <span className="text-sm font-bold text-gray-900">{modelo}</span>
                             <span className="text-xs text-gray-500 ml-2">{marca} · {ano}</span>
                           </div>
-                          <span className="text-xs text-gray-400">Ref: {item.mesReferencia}</span>
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs text-gray-500">
+                              <span className="font-semibold">{passagensPorVeiculo(item)}</span> passagens
+                            </span>
+                            <span className="text-xs text-gray-400">·</span>
+                            <span className="text-xs text-gray-400">Ref: {item.mesReferencia}</span>
+                          </div>
                         </div>
 
                         {/* Comparison Table */}
@@ -248,6 +346,7 @@ ${styleSheets}
                               <th className="py-2 px-4 text-center font-medium" style={{color: '#dc2626'}}>Sem Taggy</th>
                               <th className="py-2 px-4 text-center font-medium" style={{color: '#065f46'}}>Com Taggy</th>
                               <th className="py-2 px-4 text-center font-medium" style={{color: '#065f46'}}>Ganho</th>
+                              <th className="py-2 px-4 text-center font-medium" style={{color: '#065f46'}}>Redução</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -262,6 +361,9 @@ ${styleSheets}
                               <td className="py-2.5 px-4 text-center font-bold" style={{color: '#065f46'}}>
                                 -{formatNumber(item.ganhos?.gramasCo2Evitados / 1000)} kg
                               </td>
+                              <td className="py-2.5 px-4 text-center font-bold" style={{color: '#065f46'}}>
+                                {formatPercent(item.cenarioSemTaggy?.gramasCo2Emitidos, item.cenarioComTaggy?.gramasCo2Emitidos)}
+                              </td>
                             </tr>
                             <tr className="border-b border-gray-50">
                               <td className="py-2.5 px-4 text-gray-700 font-medium">Combustível</td>
@@ -274,6 +376,9 @@ ${styleSheets}
                               <td className="py-2.5 px-4 text-center font-bold" style={{color: '#065f46'}}>
                                 -{formatNumber(item.ganhos?.litrosCombustivelEvitados)} L
                               </td>
+                              <td className="py-2.5 px-4 text-center font-bold" style={{color: '#065f46'}}>
+                                {formatPercent(item.cenarioSemTaggy?.litrosCombustivelConsumidos, item.cenarioComTaggy?.litrosCombustivelConsumidos)}
+                              </td>
                             </tr>
                             <tr>
                               <td className="py-2.5 px-4 text-gray-700 font-medium">Papel Gasto</td>
@@ -284,7 +389,10 @@ ${styleSheets}
                                 0 g
                               </td>
                               <td className="py-2.5 px-4 text-center font-bold" style={{color: '#065f46'}}>
-                                -{formatNumber(item.ganhos?.gramasPapelEvitados)} g
+                                -{formatNumber(item.cenarioSemTaggy?.gramasPapelUtilizados)} g
+                              </td>
+                              <td className="py-2.5 px-4 text-center font-bold" style={{color: '#065f46'}}>
+                                100%
                               </td>
                             </tr>
                           </tbody>
@@ -294,6 +402,62 @@ ${styleSheets}
                   })}
                 </div>
               )}
+
+              {/* Metodologia */}
+              <div className="mt-8 mb-4 vehicle-card">
+                <h2 className="text-lg font-bold text-gray-800 mb-4 uppercase text-sm tracking-wider border-b border-gray-100 pb-2">Metodologia e Parâmetros</h2>
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 text-xs text-gray-700 leading-relaxed space-y-3">
+                  <p>
+                    <span className="font-semibold">Escopo do cálculo:</span> os valores apresentados referem-se exclusivamente ao impacto ambiental gerado durante o <span className="font-semibold">tempo parado em filas</span> de pedágios e estacionamentos. Não representam o consumo total do veículo no período.
+                  </p>
+                  <div>
+                    <p className="font-semibold mb-2">Parâmetros adotados:</p>
+                    <table className="w-full text-[11px]">
+                      <tbody>
+                        <tr className="border-b border-gray-200">
+                          <td className="py-1.5 pr-3 text-gray-600">Tempo médio em fila de pedágio (sem Taggy)</td>
+                          <td className="py-1.5 font-medium text-gray-800">10 min/passagem</td>
+                        </tr>
+                        <tr className="border-b border-gray-200">
+                          <td className="py-1.5 pr-3 text-gray-600">Tempo médio em fila de pedágio (com Taggy)</td>
+                          <td className="py-1.5 font-medium text-gray-800">2 min/passagem</td>
+                        </tr>
+                        <tr className="border-b border-gray-200">
+                          <td className="py-1.5 pr-3 text-gray-600">Tempo médio em fila de estacionamento (sem Taggy)</td>
+                          <td className="py-1.5 font-medium text-gray-800">8 min/passagem</td>
+                        </tr>
+                        <tr className="border-b border-gray-200">
+                          <td className="py-1.5 pr-3 text-gray-600">Tempo médio em fila de estacionamento (com Taggy)</td>
+                          <td className="py-1.5 font-medium text-gray-800">1 min/passagem</td>
+                        </tr>
+                        <tr className="border-b border-gray-200">
+                          <td className="py-1.5 pr-3 text-gray-600">Consumo médio em marcha lenta</td>
+                          <td className="py-1.5 font-medium text-gray-800">0,8 L/h</td>
+                        </tr>
+                        <tr className="border-b border-gray-200">
+                          <td className="py-1.5 pr-3 text-gray-600">Consumo adicional por evento de aceleração</td>
+                          <td className="py-1.5 font-medium text-gray-800">0,015 L/passagem</td>
+                        </tr>
+                        <tr className="border-b border-gray-200">
+                          <td className="py-1.5 pr-3 text-gray-600">Peso médio do ticket impresso</td>
+                          <td className="py-1.5 font-medium text-gray-800">2 g</td>
+                        </tr>
+                        <tr className="border-b border-gray-200">
+                          <td className="py-1.5 pr-3 text-gray-600">Fator de emissão do papel</td>
+                          <td className="py-1.5 font-medium text-gray-800">1,2 kg CO₂/kg</td>
+                        </tr>
+                        <tr>
+                          <td className="py-1.5 pr-3 text-gray-600">Capacidade de absorção por árvore adulta</td>
+                          <td className="py-1.5 font-medium text-gray-800">22 kg CO₂/ano</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p>
+                    <span className="font-semibold">Fontes:</span> fatores de emissão por tipo de combustível baseados em referências do IPCC (Intergovernmental Panel on Climate Change) e CETESB. Equivalência de absorção arbórea conforme estimativas do IPCC para árvores adultas em clima tropical. Preço médio de combustível (R$ 5,80/L) com base em pesquisa ANP.
+                  </p>
+                </div>
+              </div>
 
               <p className="text-xs text-gray-400 mt-4 italic text-center">* Fim do relatório *</p>
             </div>
