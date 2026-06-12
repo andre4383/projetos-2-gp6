@@ -2,6 +2,11 @@
 
 import React, { useRef } from "react";
 import { X, FileText, Download, Calendar, CheckCircle2 } from "lucide-react";
+import {
+  KG_CO2_POR_ARVORE_ANO,
+  PESO_TICKET_G,
+  PARAMETROS_METODOLOGIA,
+} from "@/lib/calculoConstantes";
 
 export default function ModalExportar({ isOpen, onClose, data, backendData = [], userName }) {
   if (!isOpen) return null;
@@ -89,12 +94,11 @@ ${styleSheets}
     (acc, c) => acc + (c.cenarioSemTaggy?.gramasPapelUtilizados || 0),
     0,
   );
-  const arvoresEquivalentes = totalCo2EvitadoKg / 22;
-  const economiaCombustivelReais = totalCombustivelEvitado * 5.8;
+  const arvoresEquivalentes = totalCo2EvitadoKg / KG_CO2_POR_ARVORE_ANO;
 
-  // Cada ticket pesa 2g — total de passagens derivado do papel utilizado
+  // Total de passagens derivado do papel utilizado, dividido pelo peso do ticket
   const passagensPorVeiculo = (item) =>
-    Math.round((item.cenarioSemTaggy?.gramasPapelUtilizados || 0) / 2);
+    Math.round((item.cenarioSemTaggy?.gramasPapelUtilizados || 0) / PESO_TICKET_G);
   const totalPassagens = backendData.reduce(
     (acc, c) => acc + passagensPorVeiculo(c),
     0,
@@ -263,12 +267,12 @@ ${styleSheets}
                     <div className="p-4 rounded-lg border border-emerald-100 bg-emerald-50/50">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">Árvores preservadas/ano</p>
                       <p className="text-2xl font-bold text-[#065f46]">{formatNumber(arvoresEquivalentes)} un.</p>
-                      <p className="text-[10px] text-gray-400 mt-1">Base: 22 kg CO₂ absorvidos por árvore adulta/ano (IPCC)</p>
+                      <p className="text-[10px] text-gray-400 mt-1">Base: {KG_CO2_POR_ARVORE_ANO} kg CO₂ absorvidos por árvore adulta/ano (IPCC)</p>
                     </div>
                     <div className="p-4 rounded-lg border border-emerald-100 bg-emerald-50/50">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">Economia em combustível</p>
-                      <p className="text-2xl font-bold text-[#065f46]">R$ {formatNumber(economiaCombustivelReais)}</p>
-                      <p className="text-[10px] text-gray-400 mt-1">Base: R$ 5,80/L (média gasolina comum)</p>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">Combustível economizado</p>
+                      <p className="text-2xl font-bold text-[#065f46]">{formatNumber(totalCombustivelEvitado)} L</p>
+                      <p className="text-[10px] text-gray-400 mt-1">Soma do ganho de combustível dos veículos</p>
                     </div>
                     <div className="p-4 rounded-lg border border-emerald-100 bg-emerald-50/50">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">CO₂ total evitado</p>
@@ -414,47 +418,20 @@ ${styleSheets}
                     <p className="font-semibold mb-2">Parâmetros adotados:</p>
                     <table className="w-full text-[11px]">
                       <tbody>
-                        <tr className="border-b border-gray-200">
-                          <td className="py-1.5 pr-3 text-gray-600">Tempo médio em fila de pedágio (sem Taggy)</td>
-                          <td className="py-1.5 font-medium text-gray-800">10 min/passagem</td>
-                        </tr>
-                        <tr className="border-b border-gray-200">
-                          <td className="py-1.5 pr-3 text-gray-600">Tempo médio em fila de pedágio (com Taggy)</td>
-                          <td className="py-1.5 font-medium text-gray-800">2 min/passagem</td>
-                        </tr>
-                        <tr className="border-b border-gray-200">
-                          <td className="py-1.5 pr-3 text-gray-600">Tempo médio em fila de estacionamento (sem Taggy)</td>
-                          <td className="py-1.5 font-medium text-gray-800">8 min/passagem</td>
-                        </tr>
-                        <tr className="border-b border-gray-200">
-                          <td className="py-1.5 pr-3 text-gray-600">Tempo médio em fila de estacionamento (com Taggy)</td>
-                          <td className="py-1.5 font-medium text-gray-800">1 min/passagem</td>
-                        </tr>
-                        <tr className="border-b border-gray-200">
-                          <td className="py-1.5 pr-3 text-gray-600">Consumo médio em marcha lenta</td>
-                          <td className="py-1.5 font-medium text-gray-800">0,8 L/h</td>
-                        </tr>
-                        <tr className="border-b border-gray-200">
-                          <td className="py-1.5 pr-3 text-gray-600">Consumo adicional por evento de aceleração</td>
-                          <td className="py-1.5 font-medium text-gray-800">0,015 L/passagem</td>
-                        </tr>
-                        <tr className="border-b border-gray-200">
-                          <td className="py-1.5 pr-3 text-gray-600">Peso médio do ticket impresso</td>
-                          <td className="py-1.5 font-medium text-gray-800">2 g</td>
-                        </tr>
-                        <tr className="border-b border-gray-200">
-                          <td className="py-1.5 pr-3 text-gray-600">Fator de emissão do papel</td>
-                          <td className="py-1.5 font-medium text-gray-800">1,2 kg CO₂/kg</td>
-                        </tr>
-                        <tr>
-                          <td className="py-1.5 pr-3 text-gray-600">Capacidade de absorção por árvore adulta</td>
-                          <td className="py-1.5 font-medium text-gray-800">22 kg CO₂/ano</td>
-                        </tr>
+                        {PARAMETROS_METODOLOGIA.map((param, i) => (
+                          <tr
+                            key={i}
+                            className={i < PARAMETROS_METODOLOGIA.length - 1 ? "border-b border-gray-200" : ""}
+                          >
+                            <td className="py-1.5 pr-3 text-gray-600">{param.label}</td>
+                            <td className="py-1.5 font-medium text-gray-800">{param.valor}</td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>
                   <p>
-                    <span className="font-semibold">Fontes:</span> fatores de emissão por tipo de combustível baseados em referências do IPCC (Intergovernmental Panel on Climate Change) e CETESB. Equivalência de absorção arbórea conforme estimativas do IPCC para árvores adultas em clima tropical. Preço médio de combustível (R$ 5,80/L) com base em pesquisa ANP.
+                    <span className="font-semibold">Fontes:</span> fatores de emissão por tipo de combustível baseados em referências do IPCC (Intergovernmental Panel on Climate Change) e CETESB. Equivalência de absorção arbórea conforme estimativas do IPCC para árvores adultas em clima tropical.
                   </p>
                 </div>
               </div>
