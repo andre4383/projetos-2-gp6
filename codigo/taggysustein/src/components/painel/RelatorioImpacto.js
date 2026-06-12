@@ -8,6 +8,7 @@ import {
   Droplet,
   FileText,
   TrendingDown,
+  Trees,
   Calendar,
   AlertCircle,
   Search,
@@ -15,6 +16,7 @@ import {
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import SeletorMes from "./SeletorMes";
+import { KG_CO2_POR_ARVORE_ANO } from "@/lib/calculoConstantes";
 
 export default function RelatorioImpacto({ userName }) {
   const [loading, setLoading] = useState(true);
@@ -23,7 +25,7 @@ export default function RelatorioImpacto({ userName }) {
 
   const [selectedMonth, setSelectedMonth] = useState("2026-06");
   const containerRef = useRef(null);
-
+  const jaAnimou = useRef(false);
 
   const fetchData = async (month) => {
     setLoading(true);
@@ -60,26 +62,22 @@ export default function RelatorioImpacto({ userName }) {
     fetchData(selectedMonth);
   }, [selectedMonth, userName]);
 
-  useGSAP(() => {
-    if (!loading && data.length > 0) {
-      gsap.from(".impact-card", {
-        y: 40,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: "power3.out",
-      });
-
-      gsap.from(".gain-metric", {
-        scale: 0.8,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "back.out(1.5)",
-        delay: 0.4,
-      });
-    }
-  }, [loading, data]);
+  useGSAP(
+    () => {
+      if (!loading && data.length > 0 && !jaAnimou.current) {
+        gsap.from(".impact-card", {
+          y: 30,
+          opacity: 0,
+          duration: 0.7,
+          stagger: 0.12,
+          ease: "power3.out",
+          clearProps: "all",
+        });
+        jaAnimou.current = true;
+      }
+    },
+    { scope: containerRef, dependencies: [loading, data] },
+  );
 
   const formatNumber = (num) => {
     return new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 }).format(
@@ -131,7 +129,17 @@ export default function RelatorioImpacto({ userName }) {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-8">
-          {data.map((item, idx) => (
+          {data.map((item, idx) => {
+            const info = (item.veiculoInfo || "").trim();
+            const parts = info.split(" ");
+            const lastPart = parts[parts.length - 1];
+            const hasYear = /^\d{4}$/.test(lastPart);
+            const marca = item.marca || parts[0] || "—";
+            const modelo = item.modelo
+              || (hasYear ? parts.slice(1, -1).join(" ") || parts[0] || "—" : parts.slice(1).join(" ") || info || "—");
+            const ano = item.ano || (hasYear ? lastPart : "—");
+
+            return (
             <div
               key={idx}
               className="impact-card bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden"
@@ -144,17 +152,17 @@ export default function RelatorioImpacto({ userName }) {
                   </div>
                   <div>
                     <div className="text-base font-bold text-gray-900 break-words">
-                      {item.modelo || item.veiculoInfo || "—"}
+                      {modelo}
                     </div>
                     <div className="flex items-center gap-3 mt-1">
                       <span className="text-xs text-gray-500">
                         <span className="font-semibold text-gray-400 uppercase tracking-wider text-[10px]">Marca </span>
-                        {item.marca || (item.veiculoInfo || "").split(" ")[0] || "—"}
+                        {marca}
                       </span>
                       <span className="text-gray-300">·</span>
                       <span className="text-xs text-gray-500">
                         <span className="font-semibold text-gray-400 uppercase tracking-wider text-[10px]">Ano </span>
-                        {item.ano || "—"}
+                        {ano}
                       </span>
                     </div>
                   </div>
@@ -325,14 +333,26 @@ export default function RelatorioImpacto({ userName }) {
                         </div>
                       </div>
 
-                      <div className="gain-metric bg-white/10 rounded-xl p-3 border border-white/10 backdrop-blur-sm sm:col-span-2 lg:col-span-1">
+                      <div className="gain-metric bg-white/10 rounded-xl p-3 border border-white/10 backdrop-blur-sm">
                         <div className="text-[10px] text-emerald-100 uppercase tracking-wider mb-1 flex items-center gap-1">
                           <FileText className="w-3 h-3" /> Papel
                         </div>
                         <div className="text-xl font-bold text-white">
-                          {formatNumber(item.ganhos.gramasPapelEvitados)}{" "}
+                          {formatNumber(item.cenarioSemTaggy.gramasPapelUtilizados)}{" "}
                           <span className="text-xs font-normal text-emerald-200">
                             g
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="gain-metric bg-white/10 rounded-xl p-3 border border-white/10 backdrop-blur-sm">
+                        <div className="text-[10px] text-emerald-100 uppercase tracking-wider mb-1 flex items-center gap-1">
+                          <Trees className="w-3 h-3" /> Árvores
+                        </div>
+                        <div className="text-xl font-bold text-white">
+                          {formatNumber((item.ganhos.gramasCo2Evitados / 1000) / KG_CO2_POR_ARVORE_ANO)}{" "}
+                          <span className="text-xs font-normal text-emerald-200">
+                            un.
                           </span>
                         </div>
                       </div>
@@ -341,7 +361,8 @@ export default function RelatorioImpacto({ userName }) {
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

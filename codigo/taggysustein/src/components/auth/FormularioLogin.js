@@ -335,13 +335,6 @@ export default function FormularioLogin() {
               {loading ? "Entrando..." : "Entrar com email"}
             </button>
           </form>
-
-          <div className="login-animate-item mt-8 text-center text-xs text-gray-500">
-            Não tem uma conta?{" "}
-            <a href="#" className="text-black font-semibold hover:underline">
-              Cadastre-se
-            </a>
-          </div>
         </div>
 
         <div className="login-animate-item flex justify-center gap-4 text-xs text-gray-400">
